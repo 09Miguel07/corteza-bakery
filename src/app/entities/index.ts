@@ -7,3 +7,4 @@ export * from './employee.entity';
 export * from './catalog.entity';
 export * from './sales.entity';
 export * from './purchasing.entity';
+export * from './quotation.entity';
