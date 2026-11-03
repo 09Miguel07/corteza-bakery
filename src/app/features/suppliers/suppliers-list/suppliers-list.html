@@ -43,6 +43,7 @@
           <th>Proveedor</th>
           <th>Insumo</th>
           <th>Contacto</th>
+          <th class="num">Presupuesto</th>
           <th>Estado</th>
           <th class="actions">Acciones</th>
         </tr>
@@ -62,6 +63,7 @@
               <div>{{ s.contactName }}</div>
               <div class="subtle">{{ s.phone | phone }}</div>
             </td>
+            <td class="num">{{ s.availableBudget | cop }}</td>
             <td>
               <app-status-badge [label]="s.isActive ? 'Activo' : 'Inactivo'" [tone]="s.isActive ? 'success' : 'neutral'" />
             </td>
@@ -79,7 +81,7 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="table-state">
+            <td colspan="7" class="table-state">
               @if (result.isLoading()) {
                 Cargando proveedores…
               } @else if (result.error()) {

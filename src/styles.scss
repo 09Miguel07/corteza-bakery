@@ -350,16 +350,19 @@ a { color: var(--color-primary); }
   border-radius: var(--radius-sm);
   background: var(--color-surface-muted);
 
-  button {
+  button,
+  a {
     border: 0;
     border-radius: 6px;
+    text-decoration: none;
     padding: 0.45rem 1rem;
     background: transparent;
     font: 600 0.88rem var(--font-body);
     color: var(--color-text-muted);
     cursor: pointer;
 
-    &.is-selected { background: var(--color-surface); color: var(--color-primary); box-shadow: var(--shadow-sm); }
+    &.is-selected,
+    &.is-active { background: var(--color-surface); color: var(--color-primary); box-shadow: var(--shadow-sm); }
   }
 }
 
@@ -614,4 +617,48 @@ a { color: var(--color-primary); }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
+}
+
+/* ---------- Compras ---------- */
+.lines {
+  width: 100%;
+  border-collapse: collapse;
+
+  th { text-align: left; font-size: 0.78rem; color: var(--color-text-subtle); font-weight: 600; padding: 0 0.5rem 0.4rem 0; }
+  td { padding: 0.35rem 0.5rem 0.35rem 0; vertical-align: top; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+}
+
+.totals {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-top: 0.9rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+
+  strong { font-family: var(--font-display); font-size: 1.5rem; }
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem 1rem;
+  margin: 0;
+  font-size: 0.9rem;
+
+  dt { color: var(--color-text-subtle); }
+  dd { margin: 0; font-weight: 600; }
+}
+
+.is-best { background: var(--color-success-bg); }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

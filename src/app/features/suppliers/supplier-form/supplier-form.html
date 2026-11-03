@@ -56,6 +56,13 @@
         <app-field-error [field]="form.email" />
       </div>
 
+      <div class="field">
+        <label for="availableBudget">Presupuesto disponible (COP)</label>
+        <input id="availableBudget" class="input" type="number" step="1000" [formField]="form.availableBudget" />
+        <span class="hint">Cada orden aprobada lo descuenta. Si la orden vale más, no se puede aprobar.</span>
+        <app-field-error [field]="form.availableBudget" />
+      </div>
+
       <fieldset class="field span-2" style="border: 0; padding: 0; margin: 0">
         <legend class="eyebrow" style="margin-bottom: 0.5rem">¿Qué nos vende? Toca para marcar o desmarcar</legend>
         <div class="chips">

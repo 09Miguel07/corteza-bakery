@@ -1,0 +1,180 @@
+<a routerLink="/purchases/quotations" class="back-link"
+  ><span class="material-symbols-outlined">arrow_back</span> Volver a solicitudes</a
+>
+
+@if (rfq.isLoading() && !rfq.value()) {
+  <section class="card"><div class="skeleton"></div></section>
+} @else if (rfq.error()) {
+  <div class="alert alert--danger">
+    <span class="material-symbols-outlined">error</span> No se encontró la solicitud.
+  </div>
+} @else if (rfq.value(); as r) {
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Solicitud de cotización</p>
+      <h1>
+        {{ r.code }}
+        <app-status-badge [label]="rfqStatus[r.status].label" [tone]="rfqStatus[r.status].tone" />
+      </h1>
+      <p class="page-header__subtitle">
+        {{ r.description ?? 'Sin descripción' }} · responder antes del {{ r.responseDeadline }}
+      </p>
+    </div>
+    <div class="page-header__actions">
+      @if (r.purchaseOrderId) {
+        <a class="btn btn--primary" [routerLink]="['/purchases/orders', r.purchaseOrderId]">
+          <span class="material-symbols-outlined">receipt_long</span> Ver orden
+          {{ r.purchaseOrderCode }}
+        </a>
+      }
+      @if (isOpen()) {
+        <button type="button" class="btn btn--ghost" [disabled]="busy()" (click)="cancel(r)">
+          Cancelar solicitud
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <div class="alert alert--danger" role="alert">
+      <span class="material-symbols-outlined">error</span>{{ message }}
+    </div>
+  }
+
+  <div class="layout-2col">
+    <div>
+      <section class="card card--flush">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Proveedor</th>
+                <th class="num">Entrega</th>
+                <th class="num">Total</th>
+                <th>Estado</th>
+                <th class="actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (q of r.quotations; track q.id) {
+                <tr [class.is-best]="q.id === r.lowestQuotationId && isOpen()">
+                  <td>
+                    <strong>{{ q.supplierName }}</strong>
+                    @if (q.id === r.lowestQuotationId && isOpen()) {
+                      <div class="subtle">Mejor precio</div>
+                    }
+                  </td>
+                  <td class="num">{{ q.deliveryDays }} días</td>
+                  <td class="num">{{ q.total | cop }}</td>
+                  <td>
+                    <app-status-badge
+                      [label]="quotationStatus[q.status].label"
+                      [tone]="quotationStatus[q.status].tone"
+                    />
+                  </td>
+                  <td class="actions">
+                    @if (isOpen()) {
+                      <button
+                        type="button"
+                        class="btn btn--link"
+                        [disabled]="busy()"
+                        (click)="select(r, q)"
+                      >
+                        Elegir
+                      </button>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="table-state">
+                    <span class="material-symbols-outlined">hourglass_empty</span> Todavía no llega
+                    ninguna cotización.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card__title">
+          <span class="material-symbols-outlined">list_alt</span>
+          <h2>Lo que pedimos</h2>
+        </div>
+        <dl class="facts" style="margin-top: 0.75rem">
+          @for (i of r.items; track i.supplyId) {
+            <dt>{{ i.supplyName }}</dt>
+            <dd>{{ i.quantity | qty }} {{ i.unitLabel }}</dd>
+          }
+        </dl>
+      </section>
+    </div>
+
+    @if (isOpen()) {
+      <form class="card" (submit)="register(r, $event)" novalidate>
+        <div class="card__title">
+          <span class="material-symbols-outlined">add_comment</span>
+          <h2>Registrar cotización</h2>
+        </div>
+
+        <div class="field" style="margin-top: 0.75rem">
+          <label for="q-supplier">Proveedor</label>
+          <select
+            id="q-supplier"
+            class="select"
+            [value]="supplierId()"
+            (change)="setSupplier($event)"
+          >
+            <option value="">Elige el proveedor…</option>
+            @for (s of pendingSuppliers(); track s.id) {
+              <option [value]="s.id">{{ s.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field" style="margin-top: 0.75rem">
+          <label for="q-days">Entrega en (días)</label>
+          <input
+            id="q-days"
+            class="input"
+            type="number"
+            step="1"
+            [value]="deliveryDays() ?? ''"
+            (input)="setDeliveryDays($event)"
+          />
+        </div>
+
+        @for (i of r.items; track i.supplyId) {
+          <div class="field" style="margin-top: 0.75rem">
+            <label [for]="'q-price-' + i.supplyId"
+              >Precio por {{ i.unitLabel }} de {{ i.supplyName }}</label
+            >
+            <input
+              [id]="'q-price-' + i.supplyId"
+              class="input"
+              type="number"
+              step="100"
+              [value]="prices()[i.supplyId] ?? ''"
+              (input)="setPrice(i.supplyId, $event)"
+            />
+          </div>
+        }
+
+        <div class="totals">
+          <span class="muted">Total cotizado</span><strong>{{ total() | cop }}</strong>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn--primary btn--block"
+          style="margin-top: 1rem"
+          [disabled]="busy()"
+        >
+          <span class="material-symbols-outlined">save</span> Guardar cotización
+        </button>
+      </form>
+    }
+  </div>
+}

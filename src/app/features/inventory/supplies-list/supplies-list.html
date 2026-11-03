@@ -79,6 +79,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th>Código</th>
           <th>Tipo</th>
           <th>Nombre del insumo</th>
           <th class="num">Cantidad disponible</th>
@@ -89,6 +90,7 @@
       <tbody>
         @for (s of rows(); track s.id) {
           <tr>
+            <td class="subtle">{{ s.code }}</td>
             <td><span class="badge badge--neutral">{{ s.categoryName }}</span></td>
             <td>
               <div class="person__name">{{ s.name }}</div>
@@ -109,7 +111,7 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="5" class="table-state">
+            <td colspan="6" class="table-state">
               @if (result.isLoading()) {
                 Cargando insumos…
               } @else if (result.error()) {

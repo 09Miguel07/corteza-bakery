@@ -1,0 +1,165 @@
+<a routerLink="/purchases" class="back-link"
+  ><span class="material-symbols-outlined">arrow_back</span> Volver a compras</a
+>
+
+@if (order.isLoading() && !order.value()) {
+  <section class="card"><div class="skeleton"></div></section>
+} @else if (order.error()) {
+  <div class="alert alert--danger">
+    <span class="material-symbols-outlined">error</span> No se encontró la orden.
+  </div>
+} @else if (order.value(); as o) {
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Orden de compra</p>
+      <h1>
+        {{ o.code }}
+        <app-status-badge [label]="status[o.status].label" [tone]="status[o.status].tone" />
+      </h1>
+      <p class="page-header__subtitle">
+        {{ o.supplierName }} · llega el {{ o.expectedDeliveryDate }}
+      </p>
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <div class="alert alert--danger" role="alert">
+      <span class="material-symbols-outlined">error</span>{{ message }}
+    </div>
+  }
+
+  <div class="layout-2col">
+    <section class="card card--flush">
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Insumo</th>
+              <th class="num">Cantidad</th>
+              <th class="num">Precio unitario</th>
+              <th class="num">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of o.items; track i.supplyId) {
+              <tr>
+                <td>{{ i.supplyName }}</td>
+                <td class="num">{{ i.quantity | qty }} {{ i.unitLabel }}</td>
+                <td class="num">{{ i.unitPrice | cop }}</td>
+                <td class="num">{{ i.lineTotal | cop }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="totals" style="padding: 1rem 1.25rem">
+        <span class="muted">Total</span><strong>{{ o.total | cop }}</strong>
+      </div>
+    </section>
+
+    <aside>
+      <section class="card">
+        <dl class="facts">
+          <dt>Proveedor</dt>
+          <dd>{{ o.supplierName }}</dd>
+          <dt>Presupuesto</dt>
+          <dd>{{ o.supplierAvailableBudget | cop }}</dd>
+          <dt>Pidió</dt>
+          <dd>{{ o.createdBy }}</dd>
+          @if (o.quotationCode) {
+            <dt>Cotización</dt>
+            <dd>{{ o.quotationCode }}</dd>
+          }
+          @if (o.approvedBy) {
+            <dt>Aprobó</dt>
+            <dd>{{ o.approvedBy }}</dd>
+          }
+          @if (o.cancelReason) {
+            <dt>Motivo</dt>
+            <dd>{{ o.cancelReason }}</dd>
+          }
+          @if (o.notes) {
+            <dt>Notas</dt>
+            <dd>{{ o.notes }}</dd>
+          }
+        </dl>
+
+        @if (actions().approve && budget()?.ok === false) {
+          <div class="alert alert--warning" style="margin-top: 1rem">
+            <span class="material-symbols-outlined">warning</span>
+            Supera el presupuesto del proveedor por {{ budget()!.shortBy | cop }}.
+          </div>
+        }
+
+        <div style="display: grid; gap: 0.6rem; margin-top: 1.25rem">
+          @if (actions().approve) {
+            <button
+              type="button"
+              class="btn btn--primary btn--block"
+              [disabled]="busy()"
+              (click)="approve(o)"
+            >
+              <span class="material-symbols-outlined">task_alt</span> Aprobar orden
+            </button>
+          }
+          @if (actions().receive) {
+            <label class="field" for="receivedDate">
+              <span>Fecha de llegada</span>
+              <input
+                id="receivedDate"
+                class="input"
+                type="date"
+                [value]="receivedDate()"
+                (input)="setReceivedDate($event)"
+              />
+            </label>
+            <button
+              type="button"
+              class="btn btn--primary btn--block"
+              [disabled]="busy()"
+              (click)="receive(o)"
+            >
+              <span class="material-symbols-outlined">inventory</span> Registrar recepción
+            </button>
+          }
+          @if (actions().cancel) {
+            @if (cancelling()) {
+              <label class="field" for="reason">
+                <span>Motivo de la cancelación</span>
+                <textarea
+                  id="reason"
+                  class="textarea"
+                  [value]="reason()"
+                  (input)="setReason($event)"
+                ></textarea>
+              </label>
+              <button
+                type="button"
+                class="btn btn--danger btn--block"
+                [disabled]="busy()"
+                (click)="cancel(o)"
+              >
+                Confirmar cancelación
+              </button>
+              <button
+                type="button"
+                class="btn btn--ghost btn--block"
+                (click)="cancelling.set(false)"
+              >
+                Volver
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="btn btn--ghost btn--block"
+                (click)="cancelling.set(true)"
+              >
+                Cancelar orden
+              </button>
+            }
+          }
+        </div>
+      </section>
+    </aside>
+  </div>
+}

@@ -1,0 +1,46 @@
+<a routerLink="/purchases/quotations" class="back-link"
+  ><span class="material-symbols-outlined">arrow_back</span> Volver a solicitudes</a
+>
+
+<header class="page-header">
+  <div>
+    <h1>Nueva solicitud de cotización</h1>
+    <p class="page-header__subtitle">Qué necesitamos y hasta cuándo esperamos precios.</p>
+  </div>
+</header>
+
+<form class="card" (submit)="save($event)" novalidate>
+  <app-form-errors [form]="form" />
+
+  <div class="form-grid">
+    <div class="field">
+      <label for="description">Descripción <span class="optional">(opcional)</span></label>
+      <input
+        id="description"
+        class="input"
+        [formField]="form.description"
+        placeholder="Ej. Harina para la temporada navideña"
+      />
+    </div>
+    <div class="field">
+      <label for="responseDeadline">Responder antes de</label>
+      <input id="responseDeadline" class="input" type="date" [formField]="form.responseDeadline" />
+      <app-field-error [field]="form.responseDeadline" />
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-section__title"><h2>Insumos a cotizar</h2></div>
+    <app-line-editor [(lines)]="lines" [supplies]="supplies.value()?.items ?? []" />
+    @if (linesTouched() && linesError(); as problem) {
+      <p class="field-error" role="alert">{{ problem }}</p>
+    }
+  </div>
+
+  <div class="form-actions">
+    <a routerLink="/purchases/quotations" class="btn btn--ghost">Cancelar</a>
+    <button type="submit" class="btn btn--primary" [disabled]="form().submitting()">
+      <span class="material-symbols-outlined">send</span> Crear solicitud
+    </button>
+  </div>
+</form>

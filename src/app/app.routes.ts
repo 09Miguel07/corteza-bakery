@@ -78,17 +78,18 @@ export const routes: Routes = [
         ],
       },
 
-      // 05 · Compras (fase 4)
+      // 05 · Compras: órdenes de compra y solicitudes de cotización
       {
         path: 'purchases',
         canMatch: [roleGuard('PURCHASES')],
-        title: 'Compras · Corteza ERP',
-        loadComponent: () => import('./features/coming-soon/coming-soon'),
-        data: {
-          module: 'Compras',
-          phase: 4,
-          screens: 'Pedidos a proveedores · Nuevo pedido · Detalle · Facturas de compra (05.1 a 05.4)',
-        },
+        children: [
+          { path: '', title: 'Compras · Corteza ERP', loadComponent: () => import('./features/purchases/purchase-orders-list/purchase-orders-list') },
+          { path: 'orders/new', title: 'Nueva orden de compra · Corteza ERP', loadComponent: () => import('./features/purchases/purchase-order-form/purchase-order-form') },
+          { path: 'orders/:id', title: 'Orden de compra · Corteza ERP', loadComponent: () => import('./features/purchases/purchase-order-detail/purchase-order-detail') },
+          { path: 'quotations', title: 'Solicitudes de cotización · Corteza ERP', loadComponent: () => import('./features/purchases/quotation-requests-list/quotation-requests-list') },
+          { path: 'quotations/new', title: 'Nueva solicitud de cotización · Corteza ERP', loadComponent: () => import('./features/purchases/quotation-request-form/quotation-request-form') },
+          { path: 'quotations/:id', title: 'Solicitud de cotización · Corteza ERP', loadComponent: () => import('./features/purchases/quotation-request-detail/quotation-request-detail') },
+        ],
       },
 
       // 06 · Talento Humano

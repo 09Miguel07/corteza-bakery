@@ -19,6 +19,8 @@ export interface SupplierListItem {
   contactName: string;
   phone: string;
   email: string;
+  /** Se descuenta al aprobar una orden de compra. */
+  availableBudget: number;
   isActive: boolean;
   categories: CategoryRef[];
 }
@@ -35,5 +37,6 @@ export interface SupplierUpsertRequest {
   contactName: string;
   phone: string;
   email: string;
+  availableBudget: number;
   categoryIds: number[];
 }

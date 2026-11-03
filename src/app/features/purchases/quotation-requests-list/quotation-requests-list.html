@@ -1,0 +1,89 @@
+<app-page-header
+  eyebrow="Módulo 05 · Compras"
+  title="Solicitudes de cotización"
+  subtitle="Pedimos precios y elegimos el mejor"
+>
+  <a routerLink="new" class="btn btn--primary">
+    <span class="material-symbols-outlined">request_quote</span> Nueva solicitud
+  </a>
+</app-page-header>
+
+<app-purchases-tabs />
+
+<section class="card card--flush">
+  <div class="filters">
+    <div class="field field--narrow">
+      <label for="f-status">Estado</label>
+      <select id="f-status" class="select" (change)="filter($event)">
+        <option value="">Todas</option>
+        @for (s of statuses; track s) {
+          <option [value]="s">{{ status[s].label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Solicitud</th>
+          <th>Descripción</th>
+          <th>Responder antes de</th>
+          <th class="num">Insumos</th>
+          <th class="num">Cotizaciones</th>
+          <th class="num">Mejor oferta</th>
+          <th>Estado</th>
+          <th class="actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.id) {
+          <tr>
+            <td>
+              <strong>{{ r.code }}</strong>
+            </td>
+            <td>{{ r.description ?? '—' }}</td>
+            <td>{{ r.responseDeadline }}</td>
+            <td class="num">{{ r.itemsCount }}</td>
+            <td class="num">{{ r.quotationsCount }}</td>
+            <td class="num">{{ r.lowestTotal | cop }}</td>
+            <td>
+              <app-status-badge [label]="status[r.status].label" [tone]="status[r.status].tone" />
+            </td>
+            <td class="actions">
+              <a class="btn btn--link" [routerLink]="[r.id]">Ver cotizaciones</a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="table-state">
+              @if (result.isLoading()) {
+                Cargando solicitudes…
+              } @else if (result.error()) {
+                No se pudo cargar la lista.
+                <button type="button" class="btn btn--link" (click)="result.reload()">
+                  Reintentar
+                </button>
+              } @else {
+                <span class="material-symbols-outlined">request_quote</span> Todavía no hay
+                solicitudes.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result.value(); as page) {
+    <app-pagination
+      [page]="page.page"
+      [pages]="page.totalPages"
+      [total]="page.total"
+      [shown]="page.items.length"
+      noun="solicitudes"
+      (pageChange)="goTo($event)"
+    />
+  }
+</section>

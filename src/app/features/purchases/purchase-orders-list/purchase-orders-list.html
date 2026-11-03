@@ -1,0 +1,121 @@
+<app-page-header
+  eyebrow="Módulo 05 · Compras"
+  title="Pedidos a proveedores"
+  subtitle="Lo que les pedimos y cuándo llega"
+>
+  <a routerLink="quotations/new" class="btn btn--ghost">
+    <span class="material-symbols-outlined">request_quote</span> Pedir cotización
+  </a>
+  <a routerLink="orders/new" class="btn btn--primary">
+    <span class="material-symbols-outlined">add_shopping_cart</span> Nueva orden
+  </a>
+</app-page-header>
+
+<app-purchases-tabs />
+
+<section class="stats" aria-label="Resumen">
+  <div class="stat stat--alert">
+    <span class="eyebrow">Por aprobar</span>
+    <div class="stat__value">{{ summary.value()?.pending ?? '—' }}</div>
+    <span class="subtle">Órdenes pendientes</span>
+  </div>
+  <div class="stat">
+    <span class="eyebrow">Aprobadas</span>
+    <div class="stat__value">{{ summary.value()?.approved ?? '—' }}</div>
+    <span class="subtle">Esperando la mercancía</span>
+  </div>
+  <div class="stat">
+    <span class="eyebrow">Llegan hoy</span>
+    <div class="stat__value">{{ summary.value()?.arrivingToday ?? '—' }}</div>
+    <span class="subtle">Tener la bodega lista</span>
+  </div>
+  <div class="stat">
+    <span class="eyebrow">Esta semana</span>
+    <div class="stat__value">{{ summary.value()?.arrivingThisWeek ?? '—' }}</div>
+    <span class="subtle">Pedidos por llegar</span>
+  </div>
+</section>
+
+<section class="card card--flush">
+  <form class="filters" (submit)="search($event)">
+    <div class="field">
+      <label for="f-code">Número de orden</label>
+      <input id="f-code" class="input" [formField]="filterForm.code" placeholder="Ej. OC-1042" />
+    </div>
+    <div class="field field--narrow">
+      <label for="f-status">Estado</label>
+      <select id="f-status" class="select" [formField]="filterForm.status" (change)="search()">
+        <option value="">Todos</option>
+        @for (s of statuses; track s) {
+          <option [value]="s">{{ status[s].label }}</option>
+        }
+      </select>
+    </div>
+    <button type="submit" class="btn btn--primary">
+      <span class="material-symbols-outlined">search</span> Buscar
+    </button>
+    <button type="button" class="btn btn--ghost" (click)="clear()">Limpiar</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Orden</th>
+          <th>Proveedor</th>
+          <th>Qué pedimos</th>
+          <th>Llega</th>
+          <th class="num">Total</th>
+          <th>Estado</th>
+          <th class="actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (o of rows(); track o.id) {
+          <tr>
+            <td>
+              <strong>{{ o.code }}</strong>
+            </td>
+            <td>{{ o.supplierName }}</td>
+            <td>{{ o.itemsSummary }}</td>
+            <td>{{ o.expectedDeliveryDate }}</td>
+            <td class="num">{{ o.total | cop }}</td>
+            <td>
+              <app-status-badge [label]="status[o.status].label" [tone]="status[o.status].tone" />
+            </td>
+            <td class="actions">
+              <a class="btn btn--link" [routerLink]="['orders', o.id]">Ver detalle</a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="table-state">
+              @if (result.isLoading()) {
+                Cargando órdenes…
+              } @else if (result.error()) {
+                No se pudo cargar la lista.
+                <button type="button" class="btn btn--link" (click)="result.reload()">
+                  Reintentar
+                </button>
+              } @else {
+                <span class="material-symbols-outlined">inventory</span> No hay órdenes con esos
+                filtros.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result.value(); as page) {
+    <app-pagination
+      [page]="page.page"
+      [pages]="page.totalPages"
+      [total]="page.total"
+      [shown]="page.items.length"
+      noun="órdenes"
+      (pageChange)="goTo($event)"
+    />
+  }
+</section>

@@ -1,0 +1,105 @@
+<a routerLink="/purchases" class="back-link"
+  ><span class="material-symbols-outlined">arrow_back</span> Volver a compras</a
+>
+
+<header class="page-header">
+  <div>
+    <h1>Nueva orden de compra</h1>
+    <p class="page-header__subtitle">A quién le pedimos, qué y cuándo debe llegar.</p>
+  </div>
+</header>
+
+<form class="layout-2col" (submit)="save($event)" novalidate>
+  <section class="card">
+    <app-form-errors [form]="form" />
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="supplierId">Proveedor</label>
+        <select id="supplierId" class="select" [formField]="form.supplierId">
+          <option value="">Elige el proveedor…</option>
+          @for (s of suppliers.value()?.items; track s.id) {
+            <option [value]="s.id">{{ s.name }}</option>
+          }
+        </select>
+        <span class="hint">Solo aparecen los proveedores activos.</span>
+        <app-field-error [field]="form.supplierId" />
+      </div>
+
+      <div class="field">
+        <label for="expectedDeliveryDate">Fecha de entrega</label>
+        <input
+          id="expectedDeliveryDate"
+          class="input"
+          type="date"
+          [formField]="form.expectedDeliveryDate"
+        />
+        <app-field-error [field]="form.expectedDeliveryDate" />
+      </div>
+
+      <div class="field span-2">
+        <label for="notes">Notas <span class="optional">(opcional)</span></label>
+        <textarea
+          id="notes"
+          class="textarea"
+          [formField]="form.notes"
+          placeholder="Ej. Entregar por la puerta de atrás"
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section__title"><h2>Insumos</h2></div>
+      <app-line-editor
+        [(lines)]="lines"
+        [supplies]="supplies.value()?.items ?? []"
+        [withPrice]="true"
+      />
+      @if (linesTouched() && linesError(); as problem) {
+        <p class="field-error" role="alert">{{ problem }}</p>
+      }
+    </div>
+  </section>
+
+  <aside class="card">
+    <div class="card__title">
+      <span class="material-symbols-outlined">account_balance_wallet</span>
+      <h2>Presupuesto</h2>
+    </div>
+    @if (supplier(); as s) {
+      <dl class="facts" style="margin-top: 0.75rem">
+        <dt>Disponible</dt>
+        <dd>{{ s.availableBudget | cop }}</dd>
+        <dt>Esta orden</dt>
+        <dd>{{ total() | cop }}</dd>
+        @if (budget(); as b) {
+          @if (b.ok) {
+            <dt>Queda</dt>
+            <dd>{{ b.remaining | cop }}</dd>
+          } @else {
+            <dt>Falta</dt>
+            <dd style="color: var(--color-danger)">{{ b.shortBy | cop }}</dd>
+          }
+        }
+      </dl>
+      @if (budget()?.ok === false) {
+        <div class="alert alert--warning" style="margin-top: 1rem">
+          <span class="material-symbols-outlined">warning</span>
+          La orden se puede crear, pero no se podrá aprobar mientras supere el presupuesto del
+          proveedor.
+        </div>
+      }
+    } @else {
+      <p class="subtle" style="margin-top: 0.5rem">
+        Elige un proveedor para ver su presupuesto disponible.
+      </p>
+    }
+
+    <div class="form-actions" style="margin-top: 1.25rem">
+      <a routerLink="/purchases" class="btn btn--ghost">Cancelar</a>
+      <button type="submit" class="btn btn--primary" [disabled]="form().submitting()">
+        <span class="material-symbols-outlined">send</span> Crear orden
+      </button>
+    </div>
+  </aside>
+</form>

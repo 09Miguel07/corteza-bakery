@@ -17,6 +17,8 @@ export interface SupplyQuery extends PageQuery {
 
 export interface Supply {
   id: number;
+  /** INS-001, lo genera la base de datos. */
+  code: string;
   name: string;
   categoryId: number;
   categoryName: string;

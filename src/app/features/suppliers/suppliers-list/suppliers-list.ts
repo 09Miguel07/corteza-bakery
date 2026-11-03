@@ -9,7 +9,7 @@ import { problemMessage } from '../../../core/utils/errors';
 import { SupplierListItem, SupplierQuery } from '../../../entities';
 import { SupplierService } from '../../../services/supplier.service';
 import { SupplyCategoryService } from '../../../services/supply-category.service';
-import { DocumentPipe, InitialsPipe, PhonePipe } from '../../../shared/pipes/format.pipes';
+import { CopPipe, DocumentPipe, InitialsPipe, PhonePipe } from '../../../shared/pipes/format.pipes';
 import { PageHeader } from '../../../shared/ui/page-header';
 import { Pagination } from '../../../shared/ui/pagination';
 import { StatusBadge } from '../../../shared/ui/status-badge';
@@ -17,7 +17,7 @@ import { StatusBadge } from '../../../shared/ui/status-badge';
 /** Pantalla 04.1 · Lista de proveedores. */
 @Component({
   selector: 'app-suppliers-list',
-  imports: [RouterLink, FormField, PageHeader, Pagination, StatusBadge, DocumentPipe, PhonePipe, InitialsPipe],
+  imports: [RouterLink, FormField, PageHeader, Pagination, StatusBadge, DocumentPipe, PhonePipe, InitialsPipe, CopPipe],
   templateUrl: './suppliers-list.html',
 })
 export default class SuppliersList {

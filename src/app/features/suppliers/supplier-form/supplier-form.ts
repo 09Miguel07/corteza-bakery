@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, linkedSignal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { email, form, FormField, pattern, required, submit, validate } from '@angular/forms/signals';
+import { email, form, FormField, min, pattern, required, submit, validate } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from '../../../core/ui/toast.service';
@@ -17,6 +17,7 @@ function toModel(s: SupplierDetail | undefined): SupplierUpsertRequest {
     contactName: s?.contactName ?? '',
     phone: s?.phone ?? '',
     email: s?.email ?? '',
+    availableBudget: s?.availableBudget ?? 0,
     categoryIds: s?.categories.map((c) => c.id) ?? [],
   };
 }
@@ -53,6 +54,8 @@ export default class SupplierForm {
     pattern(p.phone, /^\+?[\d\s]{7,20}$/, { message: 'Escribe un teléfono válido, por ejemplo 310 987 6543.' });
     required(p.email, { message: 'El correo es obligatorio: ahí se envían las órdenes de compra.' });
     email(p.email, { message: 'Escribe un correo válido, por ejemplo ventas@empresa.com.' });
+    required(p.availableBudget, { message: 'Escribe el presupuesto disponible (puede ser 0).' });
+    min(p.availableBudget, 0, { message: 'El presupuesto no puede ser negativo.' });
     validate(p.categoryIds, ({ value }) =>
       value().length === 0 ? { kind: 'required', message: 'Marca al menos una categoría de lo que nos vende.' } : undefined,
     );
