@@ -1,0 +1,192 @@
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 1.25rem 1rem;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+
+  &__label {
+    margin: 1.5rem 0 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    overflow-y: auto;
+  }
+
+  &__logout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: auto;
+    min-height: 44px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font: 600 0.9rem var(--font-body);
+    color: var(--color-text-muted);
+    cursor: pointer;
+
+    &:hover { background: var(--color-surface-alt); color: var(--color-primary); }
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  &__logo {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  &__name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+
+  &__place {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-text-subtle);
+  }
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+
+  &:hover { background: var(--color-surface-alt); color: var(--color-text); }
+
+  &.is-active {
+    background: var(--color-primary);
+    color: #fff;
+  }
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: var(--topbar-height);
+  padding: 0 2rem;
+  background: rgb(255 248 245 / 92%);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--color-border);
+
+  &__menu {
+    display: none;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: var(--color-text);
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+
+  &__name { font-weight: 600; font-size: 0.92rem; }
+
+  &__role {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+.content {
+  width: 100%;
+  max-width: 1120px;
+  padding: 2rem;
+}
+
+.sidebar-backdrop { display: none; }
+
+/* Tableta y celular (RNF-22): el menú se vuelve un panel deslizable. */
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+
+  .sidebar {
+    position: fixed;
+    z-index: 40;
+    left: 0;
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: var(--shadow-md);
+  }
+
+  .menu-open .sidebar { transform: none; }
+
+  .menu-open .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgb(31 27 23 / 35%);
+  }
+
+  .topbar {
+    padding: 0 1rem;
+    &__menu { display: inline-flex; }
+    &__title { font-size: 0.95rem; }
+    &__name { display: none; }
+  }
+
+  .content { padding: 1.25rem 1rem; }
+}

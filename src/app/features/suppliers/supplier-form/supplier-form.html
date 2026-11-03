@@ -1,0 +1,88 @@
+<a routerLink="/suppliers" class="back-link"><span class="material-symbols-outlined">arrow_back</span> Volver a proveedores</a>
+
+<header class="page-header">
+  <div>
+    <h1>{{ isEdit() ? 'Editar proveedor' : 'Añadir proveedor' }}</h1>
+    <p class="page-header__subtitle">Quién nos vende los insumos para el pan.</p>
+  </div>
+</header>
+
+@if (isEdit() && supplier.isLoading()) {
+  <section class="card"><div class="skeleton"></div></section>
+} @else {
+  <form class="card" (submit)="save($event)" novalidate>
+    @if (supplier.value()?.activePurchaseOrders; as active) {
+      <div class="alert alert--info">
+        <span class="material-symbols-outlined">info</span>
+        Tiene {{ active }} {{ active === 1 ? 'orden de compra activa' : 'órdenes de compra activas' }}: no se puede desactivar hasta que lleguen o se cancelen.
+      </div>
+    }
+
+    <app-form-errors [form]="form" />
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="name">Nombre del proveedor</label>
+        <input id="name" class="input" [formField]="form.name" placeholder="Ej. Harinera San Antonio S.A.S." />
+        <span class="hint">La empresa o fábrica que nos trae el producto.</span>
+        <app-field-error [field]="form.name" />
+      </div>
+
+      <div class="field">
+        <label for="taxId">NIT o documento</label>
+        <input id="taxId" class="input" [formField]="form.taxId" placeholder="Ej. 900.123.456-7" />
+        <span class="hint">Número tributario para la factura legal.</span>
+        <app-field-error [field]="form.taxId" />
+      </div>
+
+      <div class="field">
+        <label for="contactName">Persona de contacto</label>
+        <input id="contactName" class="input" [formField]="form.contactName" placeholder="Ej. Carlos Mendoza" />
+        <span class="hint">Quién nos contesta o nos visita.</span>
+        <app-field-error [field]="form.contactName" />
+      </div>
+
+      <div class="field">
+        <label for="phone">Teléfono celular</label>
+        <input id="phone" class="input" type="tel" [formField]="form.phone" placeholder="Ej. 310 987 6543" />
+        <span class="hint">Para llamarlo o hacer pedidos por WhatsApp.</span>
+        <app-field-error [field]="form.phone" />
+      </div>
+
+      <div class="field span-2">
+        <label for="email">Correo electrónico</label>
+        <input id="email" class="input" type="email" [formField]="form.email" placeholder="Ej. ventas@harinerasanantonio.com" />
+        <span class="hint">Donde mandamos las órdenes de compra.</span>
+        <app-field-error [field]="form.email" />
+      </div>
+
+      <fieldset class="field span-2" style="border: 0; padding: 0; margin: 0">
+        <legend class="eyebrow" style="margin-bottom: 0.5rem">¿Qué nos vende? Toca para marcar o desmarcar</legend>
+        <div class="chips">
+          @for (c of categories.value(); track c.id) {
+            <button
+              type="button"
+              class="chip"
+              [class.is-selected]="isSelected(c.id)"
+              [attr.aria-pressed]="isSelected(c.id)"
+              (click)="toggleCategory(c.id)"
+            >
+              @if (isSelected(c.id)) {
+                <span class="material-symbols-outlined" style="font-size: 16px">check</span>
+              }
+              {{ c.name }}
+            </button>
+          }
+        </div>
+        <app-field-error [field]="form.categoryIds" />
+      </fieldset>
+    </div>
+
+    <div class="form-actions">
+      <a routerLink="/suppliers" class="btn btn--ghost">Cancelar</a>
+      <button type="submit" class="btn btn--primary" [disabled]="form().submitting()">
+        {{ form().submitting() ? 'Guardando…' : 'Guardar proveedor' }}
+      </button>
+    </div>
+  </form>
+}

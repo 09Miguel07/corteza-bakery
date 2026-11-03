@@ -1,0 +1,129 @@
+<app-page-header eyebrow="Gestión de personal · Sede principal" title="Empleados" subtitle="Gestión del equipo de trabajo y turnos de La Espiga">
+  <a routerLink="new" class="btn btn--primary">
+    <span class="material-symbols-outlined">person_add</span> Nuevo empleado
+  </a>
+</app-page-header>
+
+<section class="stats">
+  <div class="stat">
+    <p class="eyebrow">Total de empleados</p>
+    <p class="stat__value">{{ summary.value()?.total ?? '—' }}</p>
+    <p class="subtle">Registrados en el sistema</p>
+  </div>
+  <div class="stat">
+    <p class="eyebrow">Activos</p>
+    <p class="stat__value">{{ summary.value()?.active ?? '—' }}</p>
+    <p class="subtle">{{ summary.value()?.activePercentage ?? 0 }} % disponibles para turnos</p>
+  </div>
+  <div class="stat">
+    <p class="eyebrow">Desactivados</p>
+    <p class="stat__value">{{ summary.value()?.inactive ?? '—' }}</p>
+    <p class="subtle">Licencias o desvinculados</p>
+  </div>
+</section>
+
+<section class="card card--flush">
+  <form class="filters" (submit)="search($event)">
+    <div class="field">
+      <label for="f-search">Buscar</label>
+      <input id="f-search" class="input" [formField]="filterForm.search" placeholder="Nombre o cédula" />
+    </div>
+    <div class="field field--narrow">
+      <label for="f-position">Rol</label>
+      <select id="f-position" class="select" [formField]="filterForm.position" (change)="search()">
+        <option value="">Todos</option>
+        @for (p of positions.value(); track p) {
+          <option [value]="p">{{ p }}</option>
+        }
+      </select>
+    </div>
+    <div class="field field--narrow">
+      <label for="f-shift">Turno</label>
+      <select id="f-shift" class="select" [formField]="filterForm.shift" (change)="search()">
+        <option value="">Todos</option>
+        <option value="Morning">Mañana</option>
+        <option value="Afternoon">Tarde</option>
+        <option value="Night">Noche</option>
+      </select>
+    </div>
+    <div class="field field--narrow">
+      <label for="f-status">Estado</label>
+      <select id="f-status" class="select" [formField]="filterForm.status" (change)="search()">
+        <option value="all">Todos</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Desactivados</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn--primary"><span class="material-symbols-outlined">search</span> Buscar</button>
+    <button type="button" class="btn btn--ghost" (click)="clear()">Limpiar filtros</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Rol</th>
+          <th>Turno</th>
+          <th>Estado</th>
+          <th class="actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (e of rows(); track e.id) {
+          <tr [class.is-inactive]="!e.isActive">
+            <td>
+              <div class="person">
+                <span class="avatar">{{ e.firstNames | initials: e.lastNames }}</span>
+                <div>
+                  <div class="person__name">{{ e.firstNames }} {{ e.lastNames }}</div>
+                  <div class="subtle">{{ e.documentType }}: {{ e.documentNumber | document }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ e.position }}</td>
+            <td>{{ shiftLabel[e.shift] }}</td>
+            <td>
+              <app-status-badge [label]="e.isActive ? 'Activo' : 'Desactivado'" [tone]="e.isActive ? 'success' : 'neutral'" />
+            </td>
+            <td class="actions">
+              <a class="btn btn--link" [routerLink]="[e.id, 'edit']">Editar</a>
+              <button
+                type="button"
+                [class]="e.isActive ? 'btn btn--link-danger' : 'btn btn--link'"
+                [disabled]="busyId() === e.id"
+                (click)="toggleActive(e)"
+              >
+                {{ e.isActive ? 'Desactivar' : 'Activar' }}
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="table-state">
+              @if (result.isLoading()) {
+                Cargando empleados…
+              } @else if (result.error()) {
+                No se pudo cargar la lista.
+                <button type="button" class="btn btn--link" (click)="result.reload()">Reintentar</button>
+              } @else {
+                <span class="material-symbols-outlined">person_search</span> No hay empleados con esos filtros.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result.value(); as page) {
+    <app-pagination
+      [page]="page.page"
+      [pages]="page.totalPages"
+      [total]="page.total"
+      [shown]="page.items.length"
+      noun="empleados"
+      (pageChange)="goTo($event)"
+    />
+  }
+</section>

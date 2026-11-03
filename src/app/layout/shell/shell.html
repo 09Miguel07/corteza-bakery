@@ -1,0 +1,49 @@
+<div class="shell" [class.menu-open]="menuOpen()">
+  <aside class="sidebar" aria-label="Menú principal">
+    <div class="brand">
+      <span class="brand__logo material-symbols-outlined">bakery_dining</span>
+      <div>
+        <strong class="brand__name">Corteza ERP</strong>
+        <span class="brand__place">LA ESPIGA</span>
+      </div>
+    </div>
+
+    <p class="sidebar__label">Menú · {{ auth.user()?.roleName }}</p>
+
+    <nav class="sidebar__nav">
+      @for (item of nav(); track item.route) {
+        <a class="nav-link" [routerLink]="item.route" routerLinkActive="is-active">
+          <span class="material-symbols-outlined">{{ item.icon }}</span>
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <button type="button" class="sidebar__logout" (click)="auth.logout()">
+      <span class="material-symbols-outlined">logout</span>
+      Cerrar sesión
+    </button>
+  </aside>
+
+  <div class="sidebar-backdrop" (click)="menuOpen.set(false)"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="topbar__menu" aria-label="Abrir menú" (click)="menuOpen.set(!menuOpen())">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <span class="topbar__title">Corteza ERP · Panadería La Espiga</span>
+      <div class="topbar__user">
+        <span class="topbar__name">{{ auth.user()?.fullName }}</span>
+        <span class="topbar__role">{{ auth.user()?.roleName }}</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<app-confirm-dialog />
+<app-toast-outlet />

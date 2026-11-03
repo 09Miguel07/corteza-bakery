@@ -1,0 +1,103 @@
+<app-page-header eyebrow="Directorio de personas" title="Clientes" subtitle="Personas registradas de la panadería">
+  <a routerLink="new" class="btn btn--primary">
+    <span class="material-symbols-outlined">person_add</span> Nuevo cliente
+  </a>
+</app-page-header>
+
+<section class="card card--flush">
+  <form class="filters" (submit)="search($event)">
+    <div class="field">
+      <label for="f-document">Cédula</label>
+      <input id="f-document" class="input" inputmode="numeric" [formField]="filterForm.document" placeholder="Ej. 1.020…" />
+    </div>
+    <div class="field">
+      <label for="f-name">Nombre</label>
+      <input id="f-name" class="input" [formField]="filterForm.name" placeholder="Ej. María" />
+    </div>
+    <div class="field field--narrow">
+      <label for="f-status">Estado</label>
+      <select id="f-status" class="select" [formField]="filterForm.status" (change)="search()">
+        <option value="all">Todos</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn--primary">
+      <span class="material-symbols-outlined">search</span> Buscar
+    </button>
+    <button type="button" class="btn btn--ghost" (click)="clear()">Limpiar</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Cédula</th>
+          <th>Nombre</th>
+          <th>Teléfono</th>
+          <th>Estado</th>
+          <th class="actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of rows(); track c.id) {
+          <tr [class.is-inactive]="!c.isActive">
+            <td>{{ c.documentNumber | document }}</td>
+            <td>
+              <div class="person">
+                <span class="avatar">{{ c.firstNames | initials: c.lastNames }}</span>
+                <div>
+                  <div class="person__name">{{ c.firstNames }} {{ c.lastNames }}</div>
+                  @if (c.email) {
+                    <div class="subtle">{{ c.email }}</div>
+                  }
+                </div>
+              </div>
+            </td>
+            <td>{{ c.phone | phone }}</td>
+            <td>
+              <app-status-badge [label]="c.isActive ? 'Activo' : 'Inactivo'" [tone]="c.isActive ? 'success' : 'neutral'" />
+            </td>
+            <td class="actions">
+              <a class="btn btn--link" [routerLink]="[c.id, 'edit']">Editar</a>
+              <button
+                type="button"
+                [class]="c.isActive ? 'btn btn--link-danger' : 'btn btn--link'"
+                [disabled]="busyId() === c.id"
+                (click)="toggleActive(c)"
+              >
+                {{ c.isActive ? 'Desactivar' : 'Activar' }}
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="table-state">
+              @if (result.isLoading()) {
+                Cargando clientes…
+              } @else if (result.error()) {
+                <span class="material-symbols-outlined">cloud_off</span>
+                No se pudo cargar la lista.
+                <button type="button" class="btn btn--link" (click)="result.reload()">Reintentar</button>
+              } @else {
+                <span class="material-symbols-outlined">person_search</span>
+                No hay clientes con esos filtros.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result.value(); as page) {
+    <app-pagination
+      [page]="page.page"
+      [pages]="page.totalPages"
+      [total]="page.total"
+      [shown]="page.items.length"
+      noun="clientes"
+      (pageChange)="goTo($event)"
+    />
+  }
+</section>

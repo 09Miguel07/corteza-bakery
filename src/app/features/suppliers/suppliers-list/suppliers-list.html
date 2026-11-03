@@ -1,0 +1,108 @@
+<app-page-header eyebrow="Directorio de proveedores" title="Proveedores" subtitle="Las empresas que nos venden los insumos">
+  <a routerLink="new" class="btn btn--primary">
+    <span class="material-symbols-outlined">add_business</span> Añadir proveedor
+  </a>
+</app-page-header>
+
+<section class="card card--flush">
+  <form class="filters" (submit)="search($event)">
+    <div class="field">
+      <label for="f-taxid">NIT</label>
+      <input id="f-taxid" class="input" [formField]="filterForm.taxId" placeholder="Ej. 900.123…" />
+    </div>
+    <div class="field">
+      <label for="f-name">Proveedor</label>
+      <input id="f-name" class="input" [formField]="filterForm.name" placeholder="Ej. Molinos…" />
+    </div>
+    <div class="field field--narrow">
+      <label for="f-category">Insumo</label>
+      <select id="f-category" class="select" [formField]="filterForm.categoryId" (change)="search()">
+        <option value="">Todos</option>
+        @for (c of categories.value(); track c.id) {
+          <option [value]="c.id">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="field field--narrow">
+      <label for="f-status">Estado</label>
+      <select id="f-status" class="select" [formField]="filterForm.status" (change)="search()">
+        <option value="all">Todos</option>
+        <option value="active">Activos</option>
+        <option value="inactive">Inactivos</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn--primary"><span class="material-symbols-outlined">search</span> Buscar</button>
+    <button type="button" class="btn btn--ghost" (click)="clear()">Limpiar</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>NIT</th>
+          <th>Proveedor</th>
+          <th>Insumo</th>
+          <th>Contacto</th>
+          <th>Estado</th>
+          <th class="actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of rows(); track s.id) {
+          <tr [class.is-inactive]="!s.isActive">
+            <td>{{ s.taxId | document }}</td>
+            <td>
+              <div class="person">
+                <span class="avatar">{{ s.name | initials: s.name.split(' ')[1] }}</span>
+                <div class="person__name">{{ s.name }}</div>
+              </div>
+            </td>
+            <td>{{ categoryNames(s) }}</td>
+            <td>
+              <div>{{ s.contactName }}</div>
+              <div class="subtle">{{ s.phone | phone }}</div>
+            </td>
+            <td>
+              <app-status-badge [label]="s.isActive ? 'Activo' : 'Inactivo'" [tone]="s.isActive ? 'success' : 'neutral'" />
+            </td>
+            <td class="actions">
+              <a class="btn btn--link" [routerLink]="[s.id, 'edit']">Editar</a>
+              <button
+                type="button"
+                [class]="s.isActive ? 'btn btn--link-danger' : 'btn btn--link'"
+                [disabled]="busyId() === s.id"
+                (click)="toggleActive(s)"
+              >
+                {{ s.isActive ? 'Desactivar' : 'Activar' }}
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="table-state">
+              @if (result.isLoading()) {
+                Cargando proveedores…
+              } @else if (result.error()) {
+                No se pudo cargar la lista.
+                <button type="button" class="btn btn--link" (click)="result.reload()">Reintentar</button>
+              } @else {
+                <span class="material-symbols-outlined">search_off</span> No hay proveedores con esos filtros.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result.value(); as page) {
+    <app-pagination
+      [page]="page.page"
+      [pages]="page.totalPages"
+      [total]="page.total"
+      [shown]="page.items.length"
+      noun="proveedores"
+      (pageChange)="goTo($event)"
+    />
+  }
+</section>

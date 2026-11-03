@@ -1,0 +1,69 @@
+<div class="login">
+  <section class="login__brand">
+    <p class="login__tag">Sistema de gestión artesanal</p>
+    <div>
+      <span class="material-symbols-outlined login__logo">bakery_dining</span>
+      <h1>Corteza ERP</h1>
+      <p class="login__lead">Todo tu negocio en un solo lugar</p>
+    </div>
+    <ul class="login__features">
+      <li><span class="material-symbols-outlined">storefront</span> Panadería La Espiga S.A.S.</li>
+      <li><span class="material-symbols-outlined">inventory_2</span> Producción · Inventario · Ventas</li>
+    </ul>
+  </section>
+
+  <section class="login__panel">
+    <form class="login__form" (submit)="signIn($event)" novalidate>
+      <h2>Bienvenido</h2>
+      <p class="muted">Ingresa tus credenciales para acceder al obrador.</p>
+
+      <app-form-errors [form]="form" />
+
+      <div class="field">
+        <label for="username">Usuario</label>
+        <input id="username" class="input" [formField]="form.username" placeholder="Ej. laura.gomez" autocomplete="username" />
+        <app-field-error [field]="form.username" />
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="password">
+          <input
+            id="password"
+            class="input"
+            [type]="showPassword() ? 'text' : 'password'"
+            [formField]="form.password"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="password__toggle"
+            [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            (click)="showPassword.set(!showPassword())"
+          >
+            <span class="material-symbols-outlined">{{ showPassword() ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+        <app-field-error [field]="form.password" />
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block" [disabled]="form().submitting()">
+        {{ form().submitting() ? 'Entrando…' : 'Entrar' }}
+      </button>
+
+      <p class="subtle login__note">Al entrar verás solo los módulos y permisos asignados a tu rol.</p>
+
+      @if (isDev) {
+        <details class="demo">
+          <summary>Usuarios de demostración (solo desarrollo)</summary>
+          <div class="chips">
+            @for (user of demoUsers; track user.username) {
+              <button type="button" class="chip" (click)="useDemo(user.username)">{{ user.role }}</button>
+            }
+          </div>
+          <p class="subtle">Contraseña de todos: <code>Corteza2026*</code></p>
+        </details>
+      }
+    </form>
+  </section>
+</div>

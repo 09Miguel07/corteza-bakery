@@ -1,0 +1,113 @@
+<a routerLink="/inventory" class="back-link"><span class="material-symbols-outlined">arrow_back</span> Volver a inventario</a>
+
+<header class="page-header">
+  <div>
+    <h1>{{ isEdit() ? 'Editar insumo' : 'Agregar insumo' }}</h1>
+    <p class="page-header__subtitle">Registra un insumo que usa la panadería.</p>
+  </div>
+</header>
+
+<div class="layout-2col">
+  <form class="card" (submit)="save($event)" novalidate>
+    <app-form-errors [form]="form" />
+
+    <div class="form-grid">
+      <div class="field span-2">
+        <label for="name">Nombre del insumo</label>
+        <input id="name" class="input" [formField]="form.name" placeholder="Ej. Harina de trigo especial" />
+        <app-field-error [field]="form.name" />
+      </div>
+
+      <div class="field">
+        <label for="category">Categoría</label>
+        <select id="category" class="select" [formField]="form.categoryId">
+          <option value="" disabled>Elige una categoría</option>
+          @for (c of categories.value(); track c.id) {
+            <option [value]="c.id">{{ c.name }}</option>
+          }
+        </select>
+        <app-field-error [field]="form.categoryId" />
+      </div>
+
+      <div class="field">
+        <label for="purchaseUnit">Unidad de compra</label>
+        <input id="purchaseUnit" class="input" [formField]="form.purchaseUnit" placeholder="Ej. Bulto de 50 kg" />
+        <app-field-error [field]="form.purchaseUnit" />
+      </div>
+
+      <div class="field">
+        <label for="unitLabel">¿Cómo se cuenta?</label>
+        <input id="unitLabel" class="input" [formField]="form.unitLabel" placeholder="Ej. bultos, cajas, bolsas" />
+        <app-field-error [field]="form.unitLabel" />
+      </div>
+
+      <div class="field">
+        <label for="unitSizeKg">Peso por unidad (kg) <span class="optional">(opcional)</span></label>
+        <input id="unitSizeKg" class="input" type="number" step="0.001" [formField]="form.unitSizeKg" placeholder="Ej. 50" />
+        <span class="hint">Sirve para mostrar el total en kilos al registrar entradas.</span>
+        <app-field-error [field]="form.unitSizeKg" />
+      </div>
+
+      @if (!isEdit()) {
+        <div class="field">
+          <label for="initialStock">Cantidad que hay ahora</label>
+          <input id="initialStock" class="input" type="number" step="0.01" [formField]="form.initialStock" />
+          <span class="hint">Existencias listas para la panadería. Queda registrada como entrada inicial.</span>
+          <app-field-error [field]="form.initialStock" />
+        </div>
+      }
+
+      <div class="field">
+        <label for="minStock">Cantidad mínima para avisar</label>
+        <input id="minStock" class="input" type="number" step="0.01" [formField]="form.minStock" />
+        <span class="hint">Te avisaremos cuando baje de esta cantidad.</span>
+        <app-field-error [field]="form.minStock" />
+      </div>
+
+      <div class="field" [class.span-2]="isEdit()">
+        <label for="mainSupplier">Proveedor principal <span class="optional">(opcional)</span></label>
+        <select id="mainSupplier" class="select" [formField]="form.mainSupplierId">
+          <option value="">Sin proveedor asignado</option>
+          @for (s of suppliers.value()?.items; track s.id) {
+            <option [value]="s.id">{{ s.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (isEdit()) {
+      <p class="subtle" style="margin-top: 1rem">
+        La existencia ({{ supply.value()?.currentStock | qty }} {{ supply.value()?.unitLabel }}) solo cambia registrando entradas o salidas.
+      </p>
+    }
+
+    <div class="form-actions">
+      <a routerLink="/inventory" class="btn btn--ghost">Cancelar</a>
+      <button type="submit" class="btn btn--primary" [disabled]="form().submitting()">
+        {{ form().submitting() ? 'Guardando…' : 'Guardar insumo' }}
+      </button>
+    </div>
+  </form>
+
+  <aside class="card">
+    <p class="eyebrow">Así se verá en el inventario</p>
+    @let p = preview();
+    <h3 style="margin: 0.5rem 0 0.25rem">{{ model().name || 'Nombre del insumo' }}</h3>
+    <p class="subtle">{{ p.category ?? 'Categoría' }} · {{ model().purchaseUnit || 'Presentación' }}</p>
+    <div style="margin: 1rem 0"><app-status-badge [label]="statusLabel[p.status]" [tone]="tone[p.status]" /></div>
+    <div class="stats" style="grid-template-columns: 1fr 1fr; margin: 0">
+      <div class="stat">
+        <p class="eyebrow">Stock en bodega</p>
+        <p class="stat__value" style="font-size: 1.5rem">{{ p.current | qty }}</p>
+        <p class="subtle">{{ p.label }}</p>
+      </div>
+      <div class="stat">
+        <p class="eyebrow">Alerta mínima</p>
+        <p class="stat__value" style="font-size: 1.5rem">{{ p.minStock | qty }}</p>
+        <p class="subtle">{{ p.label }}</p>
+      </div>
+    </div>
+    <p class="eyebrow" style="margin-top: 1rem">Proveedor asignado</p>
+    <p>{{ p.supplier ?? 'Sin proveedor' }}</p>
+  </aside>
+</div>

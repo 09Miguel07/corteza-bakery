@@ -1,0 +1,106 @@
+<a routerLink="/inventory" class="back-link"><span class="material-symbols-outlined">arrow_back</span> Volver a inventario</a>
+
+<header class="page-header">
+  <div>
+    <h1>Registrar {{ isEntry() ? 'entrada' : 'salida' }} de insumo</h1>
+    <p class="page-header__subtitle">Paso a paso fácil para {{ isEntry() ? 'sumar' : 'sacar' }} sacos y cajas de la bodega.</p>
+  </div>
+  <div class="segmented" role="group" aria-label="Tipo de movimiento">
+    <button type="button" [class.is-selected]="isEntry()" (click)="setType('In')">Entrada</button>
+    <button type="button" [class.is-selected]="!isEntry()" (click)="setType('Out')">Salida</button>
+  </div>
+</header>
+
+<form class="card" (submit)="save($event)" novalidate>
+  <app-form-errors [form]="form" />
+
+  <div class="steps">
+    <div class="field">
+      <label for="supply">1. ¿Qué insumo {{ isEntry() ? 'llegó' : 'sale' }}?</label>
+      <select id="supply" class="select" [formField]="form.supplyId">
+        <option value="" disabled>Elige el insumo</option>
+        @for (s of supplies.value()?.items; track s.id) {
+          <option [value]="s.id">{{ s.name }} · {{ s.purchaseUnit }}</option>
+        }
+      </select>
+      <app-field-error [field]="form.supplyId" />
+    </div>
+
+    <div class="field">
+      <label for="quantity">2. Cantidad que {{ isEntry() ? 'llegó' : 'sale' }} <span class="optional">({{ selected()?.unitLabel ?? 'unidades' }})</span></label>
+      <div class="stepper">
+        <button type="button" class="btn btn--ghost" aria-label="Menos" (click)="step(-1)">−</button>
+        <input id="quantity" class="input" type="number" step="0.01" [formField]="form.quantity" />
+        <button type="button" class="btn btn--ghost" aria-label="Más" (click)="step(1)">+</button>
+      </div>
+      @if (preview()?.kgQty; as kg) {
+        <span class="hint">({{ kg | qty }} kg en total)</span>
+      }
+      <app-field-error [field]="form.quantity" />
+    </div>
+
+    @if (isEntry()) {
+      <div class="field">
+        <label for="supplier">3. ¿Quién lo trajo? <span class="optional">(proveedor)</span></label>
+        <select id="supplier" class="select" [formField]="form.supplierId">
+          <option value="">Sin proveedor</option>
+          @for (s of suppliers.value()?.items; track s.id) {
+            <option [value]="s.id">{{ s.name }}</option>
+          }
+        </select>
+      </div>
+    }
+
+    <div class="field">
+      <label for="date">{{ isEntry() ? '4. Fecha de llegada' : '3. Fecha de salida' }}</label>
+      <input id="date" class="input" type="date" [formField]="form.movementDate" />
+      <app-field-error [field]="form.movementDate" />
+    </div>
+
+    @if (isEntry()) {
+      <div class="field">
+        <label for="location">Ubicación en bodega <span class="optional">(opcional)</span></label>
+        <input id="location" class="input" [formField]="form.location" placeholder="Ej. Pasillo A - Tarima 04" />
+      </div>
+      <div class="field">
+        <label for="expiration">Fecha de vencimiento <span class="optional">(opcional)</span></label>
+        <input id="expiration" class="input" type="date" [formField]="form.expirationDate" />
+      </div>
+    }
+
+    <div class="field span-2">
+      <label for="notes">Notas <span class="optional">(opcional)</span></label>
+      <textarea id="notes" class="textarea" [formField]="form.notes" placeholder="Ej. Sacos sellados y secos, revisados en la rampa 2"></textarea>
+    </div>
+  </div>
+
+  @if (preview(); as p) {
+    <section class="balance" aria-label="Así queda el stock en bodega">
+      <p class="eyebrow">Así queda el stock en bodega</p>
+      <div class="balance__grid">
+        <div>
+          <span class="eyebrow">Había antes</span>
+          <strong>{{ p.before | qty }} {{ p.supply.unitLabel }}</strong>
+          @if (p.kgBefore !== null) { <span class="subtle">({{ p.kgBefore | qty }} kg)</span> }
+        </div>
+        <div>
+          <span class="eyebrow">{{ isEntry() ? 'Entran ahora' : 'Salen ahora' }}</span>
+          <strong [class.is-out]="!isEntry()">{{ isEntry() ? '+' : '−' }} {{ p.qty | qty }} {{ p.supply.unitLabel }}</strong>
+          @if (p.kgQty !== null) { <span class="subtle">({{ p.kgQty | qty }} kg)</span> }
+        </div>
+        <div class="balance__total" [class.is-negative]="p.after < 0">
+          <span class="eyebrow">Nuevo total</span>
+          <strong>{{ p.after | qty }} {{ p.supply.unitLabel }}</strong>
+          @if (p.kgAfter !== null && p.after >= 0) { <span class="subtle">({{ p.kgAfter | qty }} kg)</span> }
+        </div>
+      </div>
+    </section>
+  }
+
+  <div class="form-actions">
+    <a routerLink="/inventory" class="btn btn--ghost">Cancelar</a>
+    <button type="submit" class="btn btn--primary" [disabled]="form().submitting()">
+      {{ form().submitting() ? 'Guardando…' : isEntry() ? 'Guardar entrada' : 'Guardar salida' }}
+    </button>
+  </div>
+</form>

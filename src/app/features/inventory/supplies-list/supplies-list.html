@@ -1,0 +1,138 @@
+<app-page-header eyebrow="Inventario" title="Así está la bodega" subtitle="Insumos físicos en la bodega central">
+  <a routerLink="movement" [queryParams]="{ type: 'In' }" class="btn btn--ghost">
+    <span class="material-symbols-outlined">move_to_inbox</span> Registrar entrada
+  </a>
+  <a routerLink="movement" [queryParams]="{ type: 'Out' }" class="btn btn--ghost">
+    <span class="material-symbols-outlined">outbox</span> Registrar salida
+  </a>
+  <a routerLink="supplies/new" class="btn btn--primary">
+    <span class="material-symbols-outlined">add</span> Agregar insumo
+  </a>
+</app-page-header>
+
+<section class="stats">
+  <div class="stat">
+    <p class="eyebrow">Insumos registrados</p>
+    <p class="stat__value">{{ result.value()?.total ?? '—' }}</p>
+    <p class="subtle">Activos en despensa y bodega</p>
+  </div>
+  <button type="button" class="stat stat--alert" style="text-align: left; cursor: pointer; font: inherit" (click)="showLowStock()">
+    <p class="eyebrow">Por acabarse o agotados</p>
+    <p class="stat__value">{{ lowStock.value()?.length ?? '—' }}</p>
+    <p class="subtle">Toca para verlos</p>
+  </button>
+</section>
+
+@if (lowStock.value()?.length) {
+  <section class="card">
+    <div class="card__title">
+      <span class="material-symbols-outlined" style="color: var(--color-warning)">warning</span>
+      <h2>Insumos por acabarse</h2>
+    </div>
+    <p class="subtle" style="margin-bottom: 0.75rem">Revisión de existencias mínimas</p>
+    @for (s of lowStock.value(); track s.id) {
+      <div class="low-row">
+        <div>
+          <strong>{{ s.name }}</strong>
+          <p class="subtle">
+            @if (s.status === 'Out') {
+              {{ s.currentStock | qty }} {{ s.unitLabel }} en stock · mínimo requerido {{ s.minStock | qty }}
+            } @else {
+              Quedan {{ s.currentStock | qty }} {{ s.unitLabel }} · mínimo {{ s.minStock | qty }}
+            }
+          </p>
+        </div>
+        <app-status-badge [label]="label[s.status]" [tone]="tone[s.status]" />
+      </div>
+    }
+  </section>
+}
+
+<section class="card card--flush" style="margin-top: 1.25rem">
+  <form class="filters" (submit)="search($event)">
+    <div class="field">
+      <label for="f-search">Buscar insumo</label>
+      <input id="f-search" class="input" [formField]="filterForm.search" placeholder="Ej. Harina, Azúcar, Cajas…" />
+    </div>
+    <div class="field field--narrow">
+      <label for="f-category">Categoría</label>
+      <select id="f-category" class="select" [formField]="filterForm.categoryId" (change)="search()">
+        <option value="">Todas</option>
+        @for (c of categories.value(); track c.id) {
+          <option [value]="c.id">{{ c.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="field field--narrow">
+      <label for="f-stock">Estado</label>
+      <select id="f-stock" class="select" [formField]="filterForm.stock" (change)="search()">
+        <option value="">Todos</option>
+        <option value="Ok">Suficiente</option>
+        <option value="Low">Por acabarse</option>
+        <option value="Out">Agotado</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn--primary"><span class="material-symbols-outlined">search</span> Buscar</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Nombre del insumo</th>
+          <th class="num">Cantidad disponible</th>
+          <th>Estado</th>
+          <th class="actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of rows(); track s.id) {
+          <tr>
+            <td><span class="badge badge--neutral">{{ s.categoryName }}</span></td>
+            <td>
+              <div class="person__name">{{ s.name }}</div>
+              <div class="subtle">{{ s.purchaseUnit }}</div>
+            </td>
+            <td class="num">
+              @if (s.currentStock > 0) {
+                <strong>{{ s.currentStock | qty }}</strong> {{ s.unitLabel }}
+              } @else {
+                <span style="color: var(--color-danger)">Sin existencias</span>
+              }
+            </td>
+            <td><app-status-badge [label]="label[s.status]" [tone]="tone[s.status]" /></td>
+            <td class="actions">
+              <a class="btn btn--link" routerLink="movement" [queryParams]="{ type: 'In', supplyId: s.id }">Entrada</a>
+              <a class="btn btn--link" [routerLink]="['supplies', s.id, 'edit']">Editar</a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="table-state">
+              @if (result.isLoading()) {
+                Cargando insumos…
+              } @else if (result.error()) {
+                No se pudo cargar la lista.
+                <button type="button" class="btn btn--link" (click)="result.reload()">Reintentar</button>
+              } @else {
+                <span class="material-symbols-outlined">inventory</span> No hay insumos con esos filtros.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result.value(); as page) {
+    <app-pagination
+      [page]="page.page"
+      [pages]="page.totalPages"
+      [total]="page.total"
+      [shown]="page.items.length"
+      noun="insumos"
+      (pageChange)="goTo($event)"
+    />
+  }
+</section>

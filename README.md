@@ -49,8 +49,9 @@ Corteza se organiza en 3 épicas:
 
 | Categoría | Tecnología |
 |---|---|
-| Backend | .NET Core / C# |
-| Frontend | Angular |
+| Backend | .NET 10 / C# · EF Core 10 ([corteza-bakery-back](https://github.com/09Miguel07/corteza-bakery-back)) |
+| Frontend | Angular 22 (zoneless, signals, Signal Forms) |
+| Pruebas | Vitest (front) · xUnit, Moq, Reqnroll (back) |
 | Base de datos | SQL Server |
 | Control de versiones | GitHub |
 | Despliegue | Azure |
@@ -65,10 +66,59 @@ Corteza se organiza en 3 épicas:
 | ⬜ Crema | Fondo | `#F5EDE4` |
 | 🟨 Dorado tostado | Acentos y alertas | `#C9A227` |
 
+## Front-end (este repositorio)
+
+SPA de Corteza para Panadería La Espiga. **Angular 22, zoneless, signals y Signal Forms.**
+
+### Correr
+
+```bash
+npm install
+npm start          # http://localhost:4200  (la API debe estar en http://localhost:5080)
+```
+
+`proxy.conf.json` redirige `/api/*` a la API, así no hace falta CORS en desarrollo.
+
+### Estructura
+
+```
+src/app/
+├── entities/        # interfaces y tipos (contratos con la API). Un archivo por módulo: *.entity.ts
+├── services/        # SOLO peticiones HTTP, un servicio por recurso (@Service de Angular 22)
+├── core/
+│   ├── guards/      # authGuard, guestGuard, roleGuard(...roles)
+│   ├── interceptors/# authInterceptor: agrega el JWT y cierra sesión en 401
+│   ├── ui/          # estado de UI sin HTTP: ToastService, ConfirmService
+│   ├── utils/       # api.ts (toHttpParams), errors.ts (ProblemDetails → Signal Forms), dates.ts
+│   └── navigation.ts# menú por rol
+├── layout/shell/    # menú lateral + barra superior
+├── shared/          # componentes y pipes reutilizables (page-header, pagination, status-badge, field-error…)
+└── features/        # pantallas por módulo (crm, suppliers, inventory, hr, admin, auth)
+```
+
+### Convenciones
+
+- **Zoneless + OnPush por defecto** (Angular 22): el estado vive en `signal`, `computed`, `linkedSignal`.
+- **Datos remotos con `rxResource`**: `params` (signal de filtros) + `stream` (llamada al servicio). Recarga sola cuando cambian los filtros.
+- **Formularios con Signal Forms** (`@angular/forms/signals`): `form(model, schema)`, `[formField]`, `submit()`.
+  Los errores 400/409/422 de la API se pegan a cada campo con `serverErrors()`.
+- **Los componentes no usan `HttpClient`**: siempre pasan por `services/`.
+- Archivos con la guía de estilo 2025 (`customer-form.ts`, sin `.component`).
+- Código en inglés, textos de la UI en español.
+
+### Scripts
+
+| Comando | Para qué |
+|---|---|
+| `npm start` | Servidor de desarrollo con proxy |
+| `npm run build` | Build de producción en `dist/web` |
+| `npm test` | Pruebas unitarias (Vitest) |
+
 ## Enlaces
 
 - 📋 Proyecto en Jira: [SCRUM — corteza_bakery](https://morenoarenasmiguel.atlassian.net/jira/software/projects/SCRUM/summary)
-- 💻 Repositorio: [github.com/09Miguel07/corteza-bakery](https://github.com/09Miguel07/corteza-bakery)
+- 💻 Front: [github.com/09Miguel07/corteza-bakery](https://github.com/09Miguel07/corteza-bakery)
+- ⚙️ API: [github.com/09Miguel07/corteza-bakery-back](https://github.com/09Miguel07/corteza-bakery-back)
 
 ---
 

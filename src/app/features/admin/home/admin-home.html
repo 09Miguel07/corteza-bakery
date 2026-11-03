@@ -1,0 +1,59 @@
+<header class="hello">
+  <p class="eyebrow">Panel del administrador</p>
+  <h1>Hola, {{ firstName() }}</h1>
+  <p class="muted">Así va toda la panadería hoy. Toca un módulo para entrar.</p>
+</header>
+
+@if (summary.error()) {
+  <div class="alert alert--danger">
+    <span class="material-symbols-outlined">error</span>
+    No se pudieron cargar los contadores.
+    <button type="button" class="btn btn--link" (click)="summary.reload()">Reintentar</button>
+  </div>
+}
+
+<section class="modules" aria-label="Módulos">
+  @for (card of cards(); track card.route) {
+    <a class="module" [routerLink]="card.route">
+      <span class="module__icon material-symbols-outlined">{{ card.icon }}</span>
+      <span class="eyebrow">{{ card.number === '★' ? 'Administrador' : 'Módulo ' + card.number }}</span>
+      <strong class="module__title">{{ card.title }}</strong>
+      <span class="module__desc">{{ card.description }}</span>
+      @if (card.stat) {
+        <span class="module__stat">{{ card.stat }}</span>
+      } @else {
+        <span class="skeleton module__skeleton"></span>
+      }
+    </a>
+  }
+</section>
+
+<section class="card review">
+  <div class="card__title">
+    <span class="material-symbols-outlined">notifications</span>
+    <h2>Para revisar hoy</h2>
+  </div>
+
+  @if (lowStock.isLoading()) {
+    <div class="skeleton"></div>
+  } @else if (lowStock.value()?.length) {
+    <ul class="review__list">
+      @for (item of lowStock.value(); track item.id) {
+        <li>
+          <span class="review__dot" [class.is-out]="item.status === 'Out'"></span>
+          <strong>{{ item.name }}</strong>
+          <span class="muted">
+            @if (item.status === 'Out') {
+              Agotado · mínimo {{ item.minStock | qty }} {{ item.unitLabel }}
+            } @else {
+              Quedan {{ item.currentStock | qty }} {{ item.unitLabel }} · mínimo {{ item.minStock | qty }}
+            }
+          </span>
+        </li>
+      }
+    </ul>
+    <a routerLink="/inventory" class="btn btn--ghost btn--sm">Ver inventario</a>
+  } @else {
+    <p class="muted">Todo en orden: ningún insumo está por debajo del mínimo.</p>
+  }
+</section>

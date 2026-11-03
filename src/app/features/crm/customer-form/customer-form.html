@@ -1,0 +1,115 @@
+<a routerLink="/customers" class="back-link"><span class="material-symbols-outlined">arrow_back</span> Volver a clientes</a>
+
+@if (isEdit() && customer.isLoading()) {
+  <section class="card"><div class="skeleton"></div></section>
+} @else if (isEdit() && customer.error()) {
+  <div class="alert alert--danger">
+    <span class="material-symbols-outlined">error</span> No se encontró el cliente.
+  </div>
+} @else {
+  <header class="page-header">
+    <div>
+      @if (customer.value(); as c) {
+        <p class="eyebrow">Ficha activa · #{{ c.code }}</p>
+        <h1>Editar cliente</h1>
+        <p class="page-header__subtitle">Modifica los datos de {{ c.firstNames }}. Los cambios se ven al instante en pedidos y facturas.</p>
+      } @else {
+        <h1>Nuevo cliente</h1>
+        <p class="page-header__subtitle">Registra a una persona para tomar sus pedidos de pan y enviarle felicitaciones.</p>
+      }
+    </div>
+  </header>
+
+  <div class="layout-2col">
+    <form class="card" (submit)="save($event)" novalidate>
+      @if (customer.value(); as c) {
+        <div class="person" style="margin-bottom: 1.5rem">
+          <span class="avatar avatar--lg">{{ c.firstNames | initials: c.lastNames }}</span>
+          <div>
+            <h2>{{ c.firstNames }} {{ c.lastNames }}</h2>
+            <p class="subtle">Registrada el {{ c.createdAt | date: 'longDate' }} · {{ c.ordersCount }} pedidos realizados</p>
+          </div>
+        </div>
+      }
+
+      <app-form-errors [form]="form" />
+
+      <div class="form-grid">
+        <div class="field span-2">
+          <label for="documentNumber">Cédula</label>
+          <input id="documentNumber" class="input" inputmode="numeric" [formField]="form.documentNumber" placeholder="Ej. 1.020.456.789" />
+          @if (isEdit()) {
+            <span class="hint">Cédula protegida: no se puede modificar.</span>
+          } @else {
+            <span class="hint">Documento de identidad nacional.</span>
+          }
+          <app-field-error [field]="form.documentNumber" />
+        </div>
+
+        <div class="field">
+          <label for="firstNames">Nombres</label>
+          <input id="firstNames" class="input" [formField]="form.firstNames" placeholder="Ej. María Fernanda" autocomplete="given-name" />
+          <app-field-error [field]="form.firstNames" />
+        </div>
+
+        <div class="field">
+          <label for="lastNames">Apellidos</label>
+          <input id="lastNames" class="input" [formField]="form.lastNames" placeholder="Ej. López Pérez" autocomplete="family-name" />
+          <app-field-error [field]="form.lastNames" />
+        </div>
+
+        <div class="field">
+          <label for="phone">Teléfono celular</label>
+          <div class="input-group">
+            <span class="input-group__addon">+57</span>
+            <input id="phone" class="input" type="tel" [formField]="form.phone" placeholder="Ej. 312 458 9012" autocomplete="tel" />
+          </div>
+          <span class="hint">Para avisarle cuando su pedido esté recién horneado.</span>
+          <app-field-error [field]="form.phone" />
+        </div>
+
+        <div class="field">
+          <label for="email">Correo electrónico <span class="optional">(opcional)</span></label>
+          <input id="email" class="input" type="email" [formField]="form.email" placeholder="Ej. maria.lopez@gmail.com" autocomplete="email" />
+          <span class="hint">Para enviarle su recibo de compra.</span>
+          <app-field-error [field]="form.email" />
+        </div>
+
+        <div class="field">
+          <label for="birthday">Fecha de cumpleaños <span class="optional">(opcional)</span></label>
+          <input id="birthday" class="input" type="date" [formField]="form.birthday" />
+          <span class="hint">Para enviarle un detalle o descuento de la panadería.</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a routerLink="/customers" class="btn btn--ghost">Cancelar</a>
+        @if (isEdit()) {
+          <button type="button" class="btn btn--ghost" (click)="reset()">Restablecer</button>
+        }
+        <button type="submit" class="btn btn--primary" [disabled]="form().submitting()">
+          {{ form().submitting() ? 'Guardando…' : isEdit() ? 'Guardar cambios' : 'Guardar cliente' }}
+        </button>
+      </div>
+    </form>
+
+    <aside class="card">
+      @if (customer.value(); as c) {
+        <p class="eyebrow">Histórico de compras</p>
+        <p class="stat__value">{{ c.totalPurchased | cop }}</p>
+        <p class="subtle">Facturas pagadas</p>
+        <hr style="border: 0; border-top: 1px solid var(--color-border); margin: 1rem 0" />
+        <p class="eyebrow">Última edición</p>
+        <p>{{ (c.updatedAt ?? c.createdAt) | date: 'medium' }}</p>
+        <p class="eyebrow" style="margin-top: 1rem">Cédula</p>
+        <p>{{ c.documentNumber | document }}</p>
+      } @else {
+        <h3>¡Club del Panadero Casero!</h3>
+        <p class="muted" style="margin-top: 0.5rem">
+          Al guardar, el cliente queda listo para que Ventas lo elija al tomar pedidos.
+        </p>
+        <p class="subtle" style="margin-top: 0.75rem">La acumulación de puntos queda para una fase posterior.</p>
+      }
+    </aside>
+  </div>
+}
