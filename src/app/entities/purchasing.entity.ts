@@ -77,11 +77,22 @@ export interface PurchaseOrderCreateRequest {
   items: PurchaseOrderLineRequest[];
 }
 
+/** Filtro de la pantalla 05.4. */
+export type PurchaseInvoiceView = 'Pending' | 'Overdue' | 'Paid';
+
+export interface PurchaseInvoiceQuery extends PageQuery {
+  number?: string;
+  supplierId?: number | null;
+  view?: PurchaseInvoiceView | null;
+}
+
 export interface PurchaseInvoice {
   id: number;
   supplierInvoiceNumber: string;
   supplierId: number;
   supplierName: string;
+  purchaseOrderId: number | null;
+  purchaseOrderCode: string | null;
   description: string | null;
   issueDate: IsoDate;
   dueDate: IsoDate;
@@ -89,4 +100,23 @@ export interface PurchaseInvoice {
   status: PurchaseInvoiceStatus;
   /** Calculado: pendiente y con fecha de vencimiento pasada. */
   isOverdue: boolean;
+  paidAt: IsoDateTime | null;
+}
+
+export interface PurchaseInvoiceSummary {
+  pendingCount: number;
+  pendingTotal: number;
+  overdueCount: number;
+  overdueTotal: number;
+  dueThisWeekTotal: number;
+}
+
+export interface PurchaseInvoiceCreateRequest {
+  supplierId: number;
+  supplierInvoiceNumber: string;
+  purchaseOrderId: number | null;
+  description: string | null;
+  issueDate: IsoDate;
+  dueDate: IsoDate;
+  total: number;
 }

@@ -59,3 +59,15 @@ export function quotationTotal(items: { supplyId: number; quantity: number }[], 
 export function invalidPriceMessage(prices: Record<number, number | null>): string | null {
   return Object.values(prices).some((p) => p == null || p <= 0) ? INVALID_AMOUNT : null;
 }
+
+const DAY = 86_400_000;
+
+/** "Vence en 3 días", "Vencida hace 2 días"… para la lista de facturas de compra (05.4). */
+export function dueLabel(invoice: { status: 'Pending' | 'Paid'; dueDate: string }, today: string): { text: string; tone: BadgeTone } {
+  if (invoice.status === 'Paid') return { text: 'Pagada', tone: 'success' };
+  const days = Math.round((Date.parse(invoice.dueDate) - Date.parse(today)) / DAY);
+  if (days < 0) return { text: `Vencida hace ${-days} ${-days === 1 ? 'día' : 'días'}`, tone: 'danger' };
+  if (days === 0) return { text: 'Vence hoy', tone: 'warning' };
+  if (days === 1) return { text: 'Vence mañana', tone: 'warning' };
+  return { text: `Vence en ${days} días`, tone: 'neutral' };
+}

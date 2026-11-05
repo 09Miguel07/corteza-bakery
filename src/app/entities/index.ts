@@ -8,3 +8,5 @@ export * from './catalog.entity';
 export * from './sales.entity';
 export * from './purchasing.entity';
 export * from './quotation.entity';
+export * from './payroll.entity';
+export * from './report.entity';
