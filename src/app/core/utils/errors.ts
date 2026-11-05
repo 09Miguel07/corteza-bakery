@@ -5,7 +5,8 @@ import { ProblemDetails } from '../../entities';
 /** Mensaje legible para el usuario a partir de un error HTTP (ProblemDetails de la API). */
 export function problemMessage(error: unknown): string {
   if (!(error instanceof HttpErrorResponse)) return 'Ocurrió un error inesperado.';
-  if (error.status === 0) return 'No hay conexión con el servidor. Revisa que la API esté encendida.';
+  if (error.status === 0)
+    return 'No hay conexión con el servidor. Revisa que la API esté encendida.';
   if (error.status === 403) return 'No tienes permiso para hacer esta acción.';
 
   const problem = error.error as ProblemDetails | null;
@@ -22,16 +23,22 @@ export function problemMessage(error: unknown): string {
  * el resto (409, 422) queda como error general del formulario.
  * Se devuelve desde la acción de `submit()`.
  */
-export function serverErrors(form: FieldTree<unknown>, error: unknown): ValidationError.WithOptionalFieldTree[] {
+export function serverErrors(
+  form: FieldTree<unknown>,
+  error: unknown,
+): ValidationError.WithOptionalFieldTree[] {
   const result: ValidationError.WithOptionalFieldTree[] = [];
-  const problem = error instanceof HttpErrorResponse ? (error.error as ProblemDetails | null) : null;
+  const problem =
+    error instanceof HttpErrorResponse ? (error.error as ProblemDetails | null) : null;
   const fields = form as unknown as Record<string, FieldTree<unknown> | undefined>;
 
   for (const [key, messages] of Object.entries(problem?.errors ?? {})) {
     const name = key.replace(/^\$\./, '');
     const field = fields[name.charAt(0).toLowerCase() + name.slice(1)];
     for (const message of messages) {
-      result.push(field ? { kind: 'server', message, fieldTree: field } : { kind: 'server', message });
+      result.push(
+        field ? { kind: 'server', message, fieldTree: field } : { kind: 'server', message },
+      );
     }
   }
 

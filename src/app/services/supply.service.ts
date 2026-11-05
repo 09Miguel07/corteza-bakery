@@ -43,6 +43,8 @@ export class SupplyService {
   }
 
   movements(id: number, query: PageQuery): Observable<PagedResult<InventoryMovement>> {
-    return this.http.get<PagedResult<InventoryMovement>>(`${this.url}/${id}/movements`, { params: toHttpParams(query) });
+    return this.http.get<PagedResult<InventoryMovement>>(`${this.url}/${id}/movements`, {
+      params: toHttpParams(query),
+    });
   }
 }

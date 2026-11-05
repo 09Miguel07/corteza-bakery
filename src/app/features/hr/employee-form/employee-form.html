@@ -1,9 +1,13 @@
-<a routerLink="/hr/employees" class="back-link"><span class="material-symbols-outlined">arrow_back</span> Empleados</a>
+<a routerLink="/hr/employees" class="back-link"
+  ><span class="material-symbols-outlined">arrow_back</span> Empleados</a
+>
 
 <header class="page-header">
   <div>
     <h1>{{ isEdit() ? 'Editar empleado' : 'Nuevo empleado' }}</h1>
-    <p class="page-header__subtitle">Registra un colaborador para vinculación laboral, nómina y seguridad social.</p>
+    <p class="page-header__subtitle">
+      Registra un colaborador para vinculación laboral, nómina y seguridad social.
+    </p>
   </div>
 </header>
 
@@ -22,23 +26,40 @@
       <div class="form-grid">
         <div class="field">
           <label for="firstNames">Nombres *</label>
-          <input id="firstNames" class="input" [formField]="form.firstNames" placeholder="Ej. Juan David" />
+          <input
+            id="firstNames"
+            class="input"
+            [formField]="form.firstNames"
+            placeholder="Ej. Juan David"
+          />
           <app-field-error [field]="form.firstNames" />
         </div>
         <div class="field">
           <label for="lastNames">Apellidos *</label>
-          <input id="lastNames" class="input" [formField]="form.lastNames" placeholder="Ej. Pérez Gómez" />
+          <input
+            id="lastNames"
+            class="input"
+            [formField]="form.lastNames"
+            placeholder="Ej. Pérez Gómez"
+          />
           <app-field-error [field]="form.lastNames" />
         </div>
         <div class="field">
           <label for="documentType">Tipo de documento *</label>
           <select id="documentType" class="select" [formField]="form.documentType">
-            @for (o of documentTypes; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            @for (o of documentTypes; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
           </select>
         </div>
         <div class="field">
           <label for="documentNumber">Número de documento *</label>
-          <input id="documentNumber" class="input" [formField]="form.documentNumber" placeholder="Ej. 71.392.845" />
+          <input
+            id="documentNumber"
+            class="input"
+            [formField]="form.documentNumber"
+            placeholder="Ej. 71.392.845"
+          />
           <app-field-error [field]="form.documentNumber" />
         </div>
         <div class="field">
@@ -48,22 +69,44 @@
         </div>
         <div class="field">
           <label for="phone">Teléfono de contacto *</label>
-          <input id="phone" class="input" type="tel" [formField]="form.phone" placeholder="+57 311 456 7890" />
+          <input
+            id="phone"
+            class="input"
+            type="tel"
+            [formField]="form.phone"
+            placeholder="+57 311 456 7890"
+          />
           <app-field-error [field]="form.phone" />
         </div>
         <div class="field">
           <label for="email">Correo electrónico *</label>
-          <input id="email" class="input" type="email" [formField]="form.email" placeholder="juan.perez@correo.com" />
+          <input
+            id="email"
+            class="input"
+            type="email"
+            [formField]="form.email"
+            placeholder="juan.perez@correo.com"
+          />
           <app-field-error [field]="form.email" />
         </div>
         <div class="field">
           <label for="address">Dirección de residencia *</label>
-          <input id="address" class="input" [formField]="form.address" placeholder="Calle 12 # 9-45, Chía" />
+          <input
+            id="address"
+            class="input"
+            [formField]="form.address"
+            placeholder="Calle 12 # 9-45, Chía"
+          />
           <app-field-error [field]="form.address" />
         </div>
         <div class="field span-2">
           <label for="emergencyContact">Contacto de emergencia *</label>
-          <input id="emergencyContact" class="input" [formField]="form.emergencyContact" placeholder="María Gómez (esposa) - 310 987 6543" />
+          <input
+            id="emergencyContact"
+            class="input"
+            [formField]="form.emergencyContact"
+            placeholder="María Gómez (esposa) - 310 987 6543"
+          />
           <app-field-error [field]="form.emergencyContact" />
         </div>
       </div>
@@ -78,12 +121,22 @@
       <div class="form-grid">
         <div class="field">
           <label for="position">Cargo *</label>
-          <input id="position" class="input" [formField]="form.position" placeholder="Ej. Panadero" />
+          <input
+            id="position"
+            class="input"
+            [formField]="form.position"
+            placeholder="Ej. Panadero"
+          />
           <app-field-error [field]="form.position" />
         </div>
         <div class="field">
           <label for="department">Área o departamento *</label>
-          <input id="department" class="input" [formField]="form.department" placeholder="Ej. Producción y Hornos" />
+          <input
+            id="department"
+            class="input"
+            [formField]="form.department"
+            placeholder="Ej. Producción y Hornos"
+          />
           <app-field-error [field]="form.department" />
         </div>
         <div class="field">
@@ -94,7 +147,9 @@
         <div class="field">
           <label for="contractType">Tipo de contrato *</label>
           <select id="contractType" class="select" [formField]="form.contractType">
-            @for (o of contractTypes; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            @for (o of contractTypes; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
           </select>
         </div>
         <div class="field">
@@ -106,14 +161,22 @@
           <label for="monthlySalary">Salario mensual (COP) *</label>
           <div class="input-group">
             <span class="input-group__addon">$</span>
-            <input id="monthlySalary" class="input" type="number" step="1000" [formField]="form.monthlySalary" />
+            <input
+              id="monthlySalary"
+              class="input"
+              type="number"
+              step="1000"
+              [formField]="form.monthlySalary"
+            />
           </div>
           <app-field-error [field]="form.monthlySalary" />
         </div>
         <div class="field">
           <label for="shift">Turno asignado *</label>
           <select id="shift" class="select" [formField]="form.shift">
-            @for (o of shifts; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            @for (o of shifts; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
           </select>
         </div>
       </div>
@@ -133,17 +196,32 @@
         </div>
         <div class="field">
           <label for="pensionFund">Fondo de pensiones *</label>
-          <input id="pensionFund" class="input" [formField]="form.pensionFund" placeholder="Ej. Protección" />
+          <input
+            id="pensionFund"
+            class="input"
+            [formField]="form.pensionFund"
+            placeholder="Ej. Protección"
+          />
           <app-field-error [field]="form.pensionFund" />
         </div>
         <div class="field">
           <label for="arl">ARL *</label>
-          <input id="arl" class="input" [formField]="form.arl" placeholder="Ej. Sura ARL (Riesgo II)" />
+          <input
+            id="arl"
+            class="input"
+            [formField]="form.arl"
+            placeholder="Ej. Sura ARL (Riesgo II)"
+          />
           <app-field-error [field]="form.arl" />
         </div>
         <div class="field">
           <label for="compensationFund">Caja de compensación *</label>
-          <input id="compensationFund" class="input" [formField]="form.compensationFund" placeholder="Ej. Cafam" />
+          <input
+            id="compensationFund"
+            class="input"
+            [formField]="form.compensationFund"
+            placeholder="Ej. Cafam"
+          />
           <app-field-error [field]="form.compensationFund" />
         </div>
       </div>
@@ -158,33 +236,53 @@
       <div class="form-grid">
         <div class="field">
           <label for="bankName">Entidad bancaria *</label>
-          <input id="bankName" class="input" [formField]="form.bankName" placeholder="Ej. Bancolombia" />
+          <input
+            id="bankName"
+            class="input"
+            [formField]="form.bankName"
+            placeholder="Ej. Bancolombia"
+          />
           <app-field-error [field]="form.bankName" />
         </div>
         <div class="field">
           <label for="bankAccountType">Tipo de cuenta *</label>
           <select id="bankAccountType" class="select" [formField]="form.bankAccountType">
-            @for (o of accountTypes; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            @for (o of accountTypes; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
           </select>
         </div>
         <div class="field">
           <label for="bankAccountNumber">Número de cuenta {{ isEdit() ? '' : '*' }}</label>
-          <input id="bankAccountNumber" class="input" inputmode="numeric" autocomplete="off" [formField]="form.bankAccountNumber" placeholder="Ej. 340-918230-11" />
+          <input
+            id="bankAccountNumber"
+            class="input"
+            inputmode="numeric"
+            autocomplete="off"
+            [formField]="form.bankAccountNumber"
+            placeholder="Ej. 340-918230-11"
+          />
           @if (employee.value(); as e) {
-            <span class="hint">Cuenta actual: {{ e.bankAccountMasked }}. Déjalo vacío para conservarla.</span>
+            <span class="hint"
+              >Cuenta actual: {{ e.bankAccountMasked }}. Déjalo vacío para conservarla.</span
+            >
           }
           <app-field-error [field]="form.bankAccountNumber" />
         </div>
         <div class="field">
           <label for="payFrequency">Frecuencia de pago *</label>
           <select id="payFrequency" class="select" [formField]="form.payFrequency">
-            @for (o of payFrequencies; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+            @for (o of payFrequencies; track o.value) {
+              <option [value]="o.value">{{ o.label }}</option>
+            }
           </select>
         </div>
       </div>
     </section>
 
-    <p class="subtle" style="margin-top: 1.25rem">* Campos obligatorios para la contratación conforme al Código Sustantivo del Trabajo.</p>
+    <p class="subtle" style="margin-top: 1.25rem">
+      * Campos obligatorios para la contratación conforme al Código Sustantivo del Trabajo.
+    </p>
 
     <div class="form-actions">
       <a routerLink="/hr/employees" class="btn btn--ghost">Cancelar</a>

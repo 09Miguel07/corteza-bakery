@@ -2,7 +2,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_URL } from '../core/utils/api';
-import { PayrollPeriodCreateRequest, PayrollPeriodDetail, PayrollPeriodListItem, PayslipDetail } from '../entities';
+import {
+  PayrollPeriodCreateRequest,
+  PayrollPeriodDetail,
+  PayrollPeriodListItem,
+  PayslipDetail,
+} from '../entities';
 
 /** Módulo 06 · Nómina: periodos (06.0) y comprobantes (06.3). */
 @Service()

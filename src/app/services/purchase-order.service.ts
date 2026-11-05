@@ -19,7 +19,9 @@ export class PurchaseOrderService {
   private readonly url = `${API_URL}/purchase-orders`;
 
   list(query: PurchaseOrderQuery): Observable<PagedResult<PurchaseOrderListItem>> {
-    return this.http.get<PagedResult<PurchaseOrderListItem>>(this.url, { params: toHttpParams(query) });
+    return this.http.get<PagedResult<PurchaseOrderListItem>>(this.url, {
+      params: toHttpParams(query),
+    });
   }
 
   summary(): Observable<PurchaseOrderSummary> {

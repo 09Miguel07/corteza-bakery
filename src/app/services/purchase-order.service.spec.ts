@@ -9,7 +9,9 @@ describe('PurchaseOrderService', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     service = TestBed.inject(PurchaseOrderService);
     http = TestBed.inject(HttpTestingController);
   });
@@ -29,7 +31,9 @@ describe('PurchaseOrderService', () => {
   it('reads the counters of screen 05.1', async () => {
     const summary = firstValueFrom(service.summary());
 
-    http.expectOne('/api/purchase-orders/summary').flush({ pending: 2, approved: 1, arrivingToday: 1, arrivingThisWeek: 3 });
+    http
+      .expectOne('/api/purchase-orders/summary')
+      .flush({ pending: 2, approved: 1, arrivingToday: 1, arrivingThisWeek: 3 });
 
     expect((await summary).arrivingThisWeek).toBe(3);
   });
@@ -72,7 +76,10 @@ describe('PurchaseOrderService', () => {
 
     http
       .expectOne('/api/purchase-orders/7/approve')
-      .flush({ detail: 'Presupuesto insuficiente' }, { status: 422, statusText: 'Unprocessable Entity' });
+      .flush(
+        { detail: 'Presupuesto insuficiente' },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
 
     await expect(result).rejects.toMatchObject({ status: 422 });
   });

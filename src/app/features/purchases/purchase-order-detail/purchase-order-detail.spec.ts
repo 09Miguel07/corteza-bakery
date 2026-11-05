@@ -86,15 +86,13 @@ describe('PurchaseOrderDetail (05.3)', () => {
 
     button('Aprobar orden')!.click();
     await settle();
-    http
-      .expectOne('/api/purchase-orders/7/approve')
-      .flush(
-        {
-          detail:
-            'Presupuesto insuficiente: la orden vale $1.250.000 y el proveedor tiene $1.000.000 disponibles.',
-        },
-        { status: 422, statusText: 'Unprocessable Entity' },
-      );
+    http.expectOne('/api/purchase-orders/7/approve').flush(
+      {
+        detail:
+          'Presupuesto insuficiente: la orden vale $1.250.000 y el proveedor tiene $1.000.000 disponibles.',
+      },
+      { status: 422, statusText: 'Unprocessable Entity' },
+    );
     await settle();
 
     expect(text()).toContain('Presupuesto insuficiente');

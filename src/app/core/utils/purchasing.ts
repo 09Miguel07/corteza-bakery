@@ -36,13 +36,24 @@ export function linesTotal(lines: { quantity: number | null; unitPrice: number |
 }
 
 /** La misma regla que PurchaseOrder.Approve: el total no puede pasar del presupuesto disponible. */
-export function budgetCheck(available: number, total: number): { ok: boolean; remaining: number; shortBy: number } {
+export function budgetCheck(
+  available: number,
+  total: number,
+): { ok: boolean; remaining: number; shortBy: number } {
   const ok = total <= available;
-  return { ok, remaining: ok ? round2(available - total) : available, shortBy: ok ? 0 : round2(total - available) };
+  return {
+    ok,
+    remaining: ok ? round2(available - total) : available,
+    shortBy: ok ? 0 : round2(total - available),
+  };
 }
 
 /** Qué botones muestra el detalle de la orden (05.3) según su estado. */
-export function orderActions(status: PurchaseOrderStatus): { approve: boolean; cancel: boolean; receive: boolean } {
+export function orderActions(status: PurchaseOrderStatus): {
+  approve: boolean;
+  cancel: boolean;
+  receive: boolean;
+} {
   return {
     approve: status === 'Pending',
     cancel: status === 'Pending' || status === 'Approved',
@@ -51,7 +62,10 @@ export function orderActions(status: PurchaseOrderStatus): { approve: boolean; c
 }
 
 /** Total de una cotización: cantidades de la solicitud × precios que ofrece el proveedor. */
-export function quotationTotal(items: { supplyId: number; quantity: number }[], prices: Record<number, number | null>): number {
+export function quotationTotal(
+  items: { supplyId: number; quantity: number }[],
+  prices: Record<number, number | null>,
+): number {
   return round2(items.reduce((sum, i) => sum + i.quantity * (prices[i.supplyId] ?? 0), 0));
 }
 
@@ -63,10 +77,14 @@ export function invalidPriceMessage(prices: Record<number, number | null>): stri
 const DAY = 86_400_000;
 
 /** "Vence en 3 días", "Vencida hace 2 días"… para la lista de facturas de compra (05.4). */
-export function dueLabel(invoice: { status: 'Pending' | 'Paid'; dueDate: string }, today: string): { text: string; tone: BadgeTone } {
+export function dueLabel(
+  invoice: { status: 'Pending' | 'Paid'; dueDate: string },
+  today: string,
+): { text: string; tone: BadgeTone } {
   if (invoice.status === 'Paid') return { text: 'Pagada', tone: 'success' };
   const days = Math.round((Date.parse(invoice.dueDate) - Date.parse(today)) / DAY);
-  if (days < 0) return { text: `Vencida hace ${-days} ${-days === 1 ? 'día' : 'días'}`, tone: 'danger' };
+  if (days < 0)
+    return { text: `Vencida hace ${-days} ${-days === 1 ? 'día' : 'días'}`, tone: 'danger' };
   if (days === 0) return { text: 'Vence hoy', tone: 'warning' };
   if (days === 1) return { text: 'Vence mañana', tone: 'warning' };
   return { text: `Vence en ${days} días`, tone: 'neutral' };

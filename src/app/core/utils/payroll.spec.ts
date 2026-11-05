@@ -2,13 +2,25 @@ import { PAYROLL_STATUS, payrollActions, periodPreset } from './payroll';
 
 describe('payroll rules (UI)', () => {
   it('proposes the whole month for a monthly payroll', () => {
-    expect(periodPreset('2026-11-04', 'Monthly')).toEqual({ startDate: '2026-11-01', endDate: '2026-11-30', paymentDate: '2026-11-30' });
+    expect(periodPreset('2026-11-04', 'Monthly')).toEqual({
+      startDate: '2026-11-01',
+      endDate: '2026-11-30',
+      paymentDate: '2026-11-30',
+    });
     expect(periodPreset('2026-02-10', 'Monthly').endDate).toBe('2026-02-28');
   });
 
   it('proposes the current fortnight for a biweekly payroll', () => {
-    expect(periodPreset('2026-11-04', 'Biweekly')).toEqual({ startDate: '2026-11-01', endDate: '2026-11-15', paymentDate: '2026-11-15' });
-    expect(periodPreset('2026-10-20', 'Biweekly')).toEqual({ startDate: '2026-10-16', endDate: '2026-10-31', paymentDate: '2026-10-31' });
+    expect(periodPreset('2026-11-04', 'Biweekly')).toEqual({
+      startDate: '2026-11-01',
+      endDate: '2026-11-15',
+      paymentDate: '2026-11-15',
+    });
+    expect(periodPreset('2026-10-20', 'Biweekly')).toEqual({
+      startDate: '2026-10-16',
+      endDate: '2026-10-31',
+      paymentDate: '2026-10-31',
+    });
   });
 
   it('shows the action that matches the status', () => {

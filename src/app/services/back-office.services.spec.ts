@@ -9,7 +9,9 @@ describe('Purchase invoices, payroll and reports services', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -20,7 +22,9 @@ describe('Purchase invoices, payroll and reports services', () => {
     invoices.list({ page: 1, pageSize: 8, view: 'Overdue' }).subscribe();
     invoices.pay(5).subscribe();
 
-    expect(http.expectOne((r) => r.url === '/api/purchase-invoices').request.params.get('view')).toBe('Overdue');
+    expect(
+      http.expectOne((r) => r.url === '/api/purchase-invoices').request.params.get('view'),
+    ).toBe('Overdue');
     expect(http.expectOne('/api/purchase-invoices/5/pay').request.method).toBe('POST');
   });
 
@@ -43,6 +47,8 @@ describe('Purchase invoices, payroll and reports services', () => {
   it('asks the report for a range', () => {
     TestBed.inject(ReportService).overview('Month').subscribe();
 
-    expect(http.expectOne((r) => r.url === '/api/reports/overview').request.params.get('range')).toBe('Month');
+    expect(
+      http.expectOne((r) => r.url === '/api/reports/overview').request.params.get('range'),
+    ).toBe('Month');
   });
 });

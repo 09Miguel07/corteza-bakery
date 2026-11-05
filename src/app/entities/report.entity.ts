@@ -17,7 +17,14 @@ export interface ReportOverview {
   byPaymentMethod: { method: PaymentMethod; count: number; total: number }[];
   last7Days: { date: IsoDate; total: number }[];
   topProducts: { productName: string; quantity: number; revenue: number }[];
-  criticalSupplies: { id: number; name: string; currentStock: number; minStock: number; unitLabel: string; status: StockStatus }[];
+  criticalSupplies: {
+    id: number;
+    name: string;
+    currentStock: number;
+    minStock: number;
+    unitLabel: string;
+    status: StockStatus;
+  }[];
   purchaseInvoicesPending: number;
   purchaseInvoicesPendingTotal: number;
   purchaseInvoicesOverdue: number;

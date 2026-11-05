@@ -1,0 +1,126 @@
+<a routerLink="/sales" class="back-link"
+  ><span class="material-symbols-outlined">arrow_back</span> Volver a pedidos</a
+>
+
+<header class="page-header">
+  <div>
+    <h1>Nuevo pedido</h1>
+    <p class="page-header__subtitle">Toca un producto para agregarlo.</p>
+  </div>
+</header>
+
+<div class="layout-2col">
+  <section class="card">
+    @if (products.isLoading()) {
+      <div class="skeleton"></div>
+    }
+    @for (group of categories(); track group.category) {
+      <h2 class="eyebrow">{{ categoryLabel[group.category] }}</h2>
+      <div class="menu">
+        @for (p of group.items; track p.id) {
+          <button
+            type="button"
+            class="product"
+            (click)="add(p)"
+            [attr.aria-label]="'Agregar ' + p.name"
+          >
+            <strong>{{ p.name }}</strong>
+            <span class="subtle">{{ p.description }}</span>
+            <span class="price">{{ p.price | cop }}</span>
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  <aside class="card">
+    <div class="segmented" role="group" aria-label="Tipo de servicio">
+      <button
+        type="button"
+        [class.is-selected]="serviceType() === 'DineIn'"
+        (click)="serviceType.set('DineIn')"
+      >
+        En mesa
+      </button>
+      <button
+        type="button"
+        [class.is-selected]="serviceType() === 'Takeaway'"
+        (click)="serviceType.set('Takeaway')"
+      >
+        Para llevar
+      </button>
+    </div>
+
+    @if (serviceType() === 'DineIn') {
+      <div class="field" style="margin-top: 0.9rem">
+        <label for="table">Mesa</label>
+        <select id="table" class="select" [value]="selectedTable()" (change)="pickTable($event)">
+          <option value="">Elige una mesa libre…</option>
+          @for (t of freeTables(); track t.id) {
+            <option [value]="t.id">Mesa {{ t.number }} · {{ t.capacity }} puestos</option>
+          }
+        </select>
+      </div>
+    }
+
+    <div class="field" style="margin-top: 0.9rem">
+      <label for="customer">Cliente <span class="optional">(opcional)</span></label>
+      <select id="customer" class="select" [value]="customerId()" (change)="pickCustomer($event)">
+        <option value="">Cliente ocasional</option>
+        @for (c of customers.value()?.items; track c.id) {
+          <option [value]="c.id">{{ c.firstNames }} {{ c.lastNames }}</option>
+        }
+      </select>
+    </div>
+
+    <h2 class="eyebrow" style="margin-top: 1.25rem">Pedido</h2>
+    @for (line of cart(); track line.productId) {
+      <div class="cart-line">
+        <div>
+          <strong>{{ line.name }}</strong>
+          <div class="subtle">{{ line.unitPrice | cop }} c/u</div>
+        </div>
+        <div class="stepper">
+          <button
+            type="button"
+            (click)="change(line, -1)"
+            [attr.aria-label]="'Quitar uno de ' + line.name"
+          >
+            −
+          </button>
+          <span>{{ line.quantity }}</span>
+          <button
+            type="button"
+            (click)="change(line, 1)"
+            [attr.aria-label]="'Agregar uno de ' + line.name"
+          >
+            +
+          </button>
+        </div>
+        <strong>{{ line.quantity * line.unitPrice | cop }}</strong>
+      </div>
+    } @empty {
+      <p class="subtle">Todavía no hay productos.</p>
+    }
+
+    <div class="totals">
+      <span class="muted">Total</span><strong>{{ total() | cop }}</strong>
+    </div>
+
+    @if (error(); as message) {
+      <div class="alert alert--danger" role="alert" style="margin-top: 1rem">
+        <span class="material-symbols-outlined">error</span>{{ message }}
+      </div>
+    }
+
+    <button
+      type="button"
+      class="btn btn--primary btn--block"
+      style="margin-top: 1rem"
+      [disabled]="saving()"
+      (click)="save()"
+    >
+      <span class="material-symbols-outlined">send</span> Enviar a cocina
+    </button>
+  </aside>
+</div>

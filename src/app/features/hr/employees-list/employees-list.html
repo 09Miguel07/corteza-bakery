@@ -1,4 +1,11 @@
-<app-page-header eyebrow="Gestión de personal · Sede principal" title="Empleados" subtitle="Gestión del equipo de trabajo y turnos de La Espiga">
+<app-page-header
+  eyebrow="Gestión de personal · Sede principal"
+  title="Empleados"
+  subtitle="Gestión del equipo de trabajo y turnos de La Espiga"
+>
+  <a routerLink="/hr/payroll" class="btn btn--ghost">
+    <span class="material-symbols-outlined">payments</span> Nómina
+  </a>
   <a routerLink="new" class="btn btn--primary">
     <span class="material-symbols-outlined">person_add</span> Nuevo empleado
   </a>
@@ -26,7 +33,12 @@
   <form class="filters" (submit)="search($event)">
     <div class="field">
       <label for="f-search">Buscar</label>
-      <input id="f-search" class="input" [formField]="filterForm.search" placeholder="Nombre o cédula" />
+      <input
+        id="f-search"
+        class="input"
+        [formField]="filterForm.search"
+        placeholder="Nombre o cédula"
+      />
     </div>
     <div class="field field--narrow">
       <label for="f-position">Rol</label>
@@ -54,7 +66,9 @@
         <option value="inactive">Desactivados</option>
       </select>
     </div>
-    <button type="submit" class="btn btn--primary"><span class="material-symbols-outlined">search</span> Buscar</button>
+    <button type="submit" class="btn btn--primary">
+      <span class="material-symbols-outlined">search</span> Buscar
+    </button>
     <button type="button" class="btn btn--ghost" (click)="clear()">Limpiar filtros</button>
   </form>
 
@@ -84,7 +98,10 @@
             <td>{{ e.position }}</td>
             <td>{{ shiftLabel[e.shift] }}</td>
             <td>
-              <app-status-badge [label]="e.isActive ? 'Activo' : 'Desactivado'" [tone]="e.isActive ? 'success' : 'neutral'" />
+              <app-status-badge
+                [label]="e.isActive ? 'Activo' : 'Desactivado'"
+                [tone]="e.isActive ? 'success' : 'neutral'"
+              />
             </td>
             <td class="actions">
               <a class="btn btn--link" [routerLink]="[e.id, 'edit']">Editar</a>
@@ -105,9 +122,12 @@
                 Cargando empleados…
               } @else if (result.error()) {
                 No se pudo cargar la lista.
-                <button type="button" class="btn btn--link" (click)="result.reload()">Reintentar</button>
+                <button type="button" class="btn btn--link" (click)="result.reload()">
+                  Reintentar
+                </button>
               } @else {
-                <span class="material-symbols-outlined">person_search</span> No hay empleados con esos filtros.
+                <span class="material-symbols-outlined">person_search</span> No hay empleados con
+                esos filtros.
               }
             </td>
           </tr>

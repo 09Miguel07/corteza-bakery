@@ -1,4 +1,14 @@
-import { addToCart, canCancel, cartTotal, changeFor, nextStatus, ORDER_STATUS, quickCash, setQuantity, TABLE_STATE } from './sales';
+import {
+  addToCart,
+  canCancel,
+  cartTotal,
+  changeFor,
+  nextStatus,
+  ORDER_STATUS,
+  quickCash,
+  setQuantity,
+  TABLE_STATE,
+} from './sales';
 
 const bread = { id: 1, name: 'Pan francés', price: 1_500 };
 const coffee = { id: 2, name: 'Café con leche', price: 3_800 };

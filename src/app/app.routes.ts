@@ -27,8 +27,7 @@ export const routes: Routes = [
         path: 'reports',
         canMatch: [roleGuard()],
         title: 'Reportes · Corteza ERP',
-        loadComponent: () => import('./features/coming-soon/coming-soon'),
-        data: { module: 'Reportes', phase: 6, screens: '¿Cómo va la panadería? (07.1)' },
+        loadComponent: () => import('./features/admin/reports/reports'),
       },
 
       // 01 · CRM (Clientes)
@@ -42,17 +41,18 @@ export const routes: Routes = [
         ],
       },
 
-      // 02 · Facturación y Ventas (fase 3)
+      // 02 · Facturación y Ventas
       {
         path: 'sales',
         canMatch: [roleGuard('SALES', 'CRM')],
-        title: 'Facturación y Ventas · Corteza ERP',
-        loadComponent: () => import('./features/coming-soon/coming-soon'),
-        data: {
-          module: 'Facturación y Ventas',
-          phase: 3,
-          screens: 'Pedidos · Nuevo pedido · Detalle · Mesas · Cuenta y cobro · Facturas de venta (02.1 a 02.6)',
-        },
+        children: [
+          { path: '', title: 'Pedidos · Corteza ERP', loadComponent: () => import('./features/sales/orders-list/orders-list') },
+          { path: 'new', title: 'Nuevo pedido · Corteza ERP', loadComponent: () => import('./features/sales/order-form/order-form') },
+          { path: 'tables', title: 'Mesas · Corteza ERP', loadComponent: () => import('./features/sales/tables-board/tables-board') },
+          { path: 'invoices', title: 'Facturas de venta · Corteza ERP', loadComponent: () => import('./features/sales/sales-invoices-list/sales-invoices-list') },
+          { path: 'invoices/:id', title: 'Factura de venta · Corteza ERP', loadComponent: () => import('./features/sales/sales-invoice-detail/sales-invoice-detail') },
+          { path: ':id', title: 'Pedido · Corteza ERP', loadComponent: () => import('./features/sales/order-detail/order-detail') },
+        ],
       },
 
       // 03 · Inventarios
@@ -88,6 +88,8 @@ export const routes: Routes = [
           { path: 'orders/:id', title: 'Orden de compra · Corteza ERP', loadComponent: () => import('./features/purchases/purchase-order-detail/purchase-order-detail') },
           { path: 'quotations', title: 'Solicitudes de cotización · Corteza ERP', loadComponent: () => import('./features/purchases/quotation-requests-list/quotation-requests-list') },
           { path: 'quotations/new', title: 'Nueva solicitud de cotización · Corteza ERP', loadComponent: () => import('./features/purchases/quotation-request-form/quotation-request-form') },
+          { path: 'invoices', title: 'Facturas de compra · Corteza ERP', loadComponent: () => import('./features/purchases/purchase-invoices-list/purchase-invoices-list') },
+          { path: 'invoices/new', title: 'Registrar factura de compra · Corteza ERP', loadComponent: () => import('./features/purchases/purchase-invoice-form/purchase-invoice-form') },
           { path: 'quotations/:id', title: 'Solicitud de cotización · Corteza ERP', loadComponent: () => import('./features/purchases/quotation-request-detail/quotation-request-detail') },
         ],
       },
@@ -101,12 +103,9 @@ export const routes: Routes = [
           { path: 'employees', title: 'Empleados · Corteza ERP', loadComponent: () => import('./features/hr/employees-list/employees-list') },
           { path: 'employees/new', title: 'Nuevo empleado · Corteza ERP', loadComponent: () => import('./features/hr/employee-form/employee-form') },
           { path: 'employees/:id/edit', title: 'Editar empleado · Corteza ERP', loadComponent: () => import('./features/hr/employee-form/employee-form') },
-          {
-            path: 'payroll',
-            title: 'Nómina · Corteza ERP',
-            loadComponent: () => import('./features/coming-soon/coming-soon'),
-            data: { module: 'Nómina', phase: 5, screens: 'Calendario de pagos · Comprobante de nómina (06.0 y 06.3)' },
-          },
+          { path: 'payroll', title: 'Nómina · Corteza ERP', loadComponent: () => import('./features/hr/payroll-periods/payroll-periods') },
+          { path: 'payroll/:id', title: 'Periodo de nómina · Corteza ERP', loadComponent: () => import('./features/hr/payroll-period-detail/payroll-period-detail') },
+          { path: 'payslips/:id', title: 'Comprobante de nómina · Corteza ERP', loadComponent: () => import('./features/hr/payslip/payslip') },
         ],
       },
 

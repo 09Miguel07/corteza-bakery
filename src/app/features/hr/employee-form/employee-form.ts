@@ -1,6 +1,15 @@
 import { Component, computed, inject, input, linkedSignal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
-import { email, form, FormField, min, pattern, required, submit, validate } from '@angular/forms/signals';
+import {
+  email,
+  form,
+  FormField,
+  min,
+  pattern,
+  required,
+  submit,
+  validate,
+} from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ToastService } from '../../../core/ui/toast.service';
@@ -17,7 +26,9 @@ import {
 import { EmployeeService } from '../../../services/employee.service';
 import { FieldError, FormErrors } from '../../../shared/ui/field-error';
 
-type EmployeeFormModel = Omit<EmployeeUpsertRequest, 'bankAccountNumber'> & { bankAccountNumber: string };
+type EmployeeFormModel = Omit<EmployeeUpsertRequest, 'bankAccountNumber'> & {
+  bankAccountNumber: string;
+};
 
 function toModel(e: EmployeeDetail | undefined): EmployeeFormModel {
   return {
@@ -79,13 +90,16 @@ export default class EmployeeForm {
   protected readonly payFrequencies = entries(PAY_FREQUENCY_LABEL);
 
   protected readonly form = form(this.model, (p) => {
-    const req = (path: Parameters<typeof required>[0], message: string) => required(path, { message });
+    const req = (path: Parameters<typeof required>[0], message: string) =>
+      required(path, { message });
 
     // 1. Datos personales
     req(p.firstNames, 'Los nombres son obligatorios.');
     req(p.lastNames, 'Los apellidos son obligatorios.');
     req(p.documentNumber, 'El número de documento es obligatorio.');
-    pattern(p.documentNumber, /^[\dA-Za-z.\s]{5,20}$/, { message: 'El número de documento no es válido.' });
+    pattern(p.documentNumber, /^[\dA-Za-z.\s]{5,20}$/, {
+      message: 'El número de documento no es válido.',
+    });
     req(p.birthDate, 'La fecha de nacimiento es obligatoria.');
     req(p.phone, 'El teléfono es obligatorio.');
     pattern(p.phone, /^\+?[\d\s()-]{7,25}$/, { message: 'Escribe un teléfono válido.' });
@@ -111,8 +125,13 @@ export default class EmployeeForm {
     req(p.bankName, 'La entidad bancaria es obligatoria.');
     validate(p.bankAccountNumber, ({ value }) => {
       const v = value().trim();
-      if (!v && !this.isEdit()) return { kind: 'required', message: 'El número de cuenta es obligatorio para pagar la nómina.' };
-      if (v && !/^[\d\s-]{6,30}$/.test(v)) return { kind: 'pattern', message: 'Solo números y guiones.' };
+      if (!v && !this.isEdit())
+        return {
+          kind: 'required',
+          message: 'El número de cuenta es obligatorio para pagar la nómina.',
+        };
+      if (v && !/^[\d\s-]{6,30}$/.test(v))
+        return { kind: 'pattern', message: 'Solo números y guiones.' };
       return undefined;
     });
   });
@@ -121,12 +140,17 @@ export default class EmployeeForm {
     event.preventDefault();
     await submit(this.form, async () => {
       const m = this.model();
-      const request: EmployeeUpsertRequest = { ...m, bankAccountNumber: m.bankAccountNumber.trim() || null };
+      const request: EmployeeUpsertRequest = {
+        ...m,
+        bankAccountNumber: m.bankAccountNumber.trim() || null,
+      };
       try {
         const id = this.id();
         if (id) await firstValueFrom(this.employees.update(Number(id), request));
         else await firstValueFrom(this.employees.create(request));
-        this.toast.success(id ? 'Datos del empleado actualizados.' : `${m.firstNames} quedó registrado.`);
+        this.toast.success(
+          id ? 'Datos del empleado actualizados.' : `${m.firstNames} quedó registrado.`,
+        );
         await this.router.navigate(['/hr/employees']);
         return undefined;
       } catch (error) {

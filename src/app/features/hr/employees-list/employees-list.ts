@@ -78,7 +78,9 @@ export default class EmployeesList {
     this.busyId.set(e.id);
     try {
       await firstValueFrom(this.employees.setActive(e.id, !e.isActive));
-      this.toast.success(e.isActive ? `${name} quedó desactivado.` : `${name} está activo de nuevo.`);
+      this.toast.success(
+        e.isActive ? `${name} quedó desactivado.` : `${name} está activo de nuevo.`,
+      );
       this.result.reload();
       this.summary.reload();
     } catch (error) {

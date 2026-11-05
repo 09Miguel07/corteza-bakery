@@ -2,7 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_URL, toHttpParams } from '../core/utils/api';
-import { PagedResult, SupplierDetail, SupplierListItem, SupplierQuery, SupplierUpsertRequest } from '../entities';
+import {
+  PagedResult,
+  SupplierDetail,
+  SupplierListItem,
+  SupplierQuery,
+  SupplierUpsertRequest,
+} from '../entities';
 
 /** Peticiones del módulo 04 · Proveedores. */
 @Service()

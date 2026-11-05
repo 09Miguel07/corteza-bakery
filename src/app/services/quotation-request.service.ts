@@ -37,8 +37,15 @@ export class QuotationRequestService {
   }
 
   /** Cierra la solicitud, rechaza las demás cotizaciones y crea la orden de compra pendiente. */
-  select(id: number, quotationId: number, expectedDeliveryDate: IsoDate | null): Observable<SelectQuotationResult> {
-    return this.http.post<SelectQuotationResult>(`${this.url}/${id}/quotations/${quotationId}/select`, { expectedDeliveryDate });
+  select(
+    id: number,
+    quotationId: number,
+    expectedDeliveryDate: IsoDate | null,
+  ): Observable<SelectQuotationResult> {
+    return this.http.post<SelectQuotationResult>(
+      `${this.url}/${id}/quotations/${quotationId}/select`,
+      { expectedDeliveryDate },
+    );
   }
 
   cancel(id: number): Observable<void> {

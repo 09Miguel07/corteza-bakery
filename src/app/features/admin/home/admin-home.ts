@@ -33,15 +33,65 @@ export default class AdminHome {
 
   protected readonly cards = computed<ModuleCard[]>(() => {
     const s = this.summary.value();
-    const plural = (n: number | undefined, one: string, many: string) => (n === undefined ? null : `${n} ${n === 1 ? one : many}`);
+    const plural = (n: number | undefined, one: string, many: string) =>
+      n === undefined ? null : `${n} ${n === 1 ? one : many}`;
     return [
-      { number: '01', title: 'CRM (Clientes)', description: 'Las personas que compran', route: '/customers', icon: 'groups', stat: plural(s?.activeCustomers, 'cliente', 'clientes') },
-      { number: '02', title: 'Facturación y Ventas', description: 'Pedidos, cobro y facturas', route: '/sales', icon: 'point_of_sale', stat: plural(s?.ordersToday, 'pedido hoy', 'pedidos hoy') },
-      { number: '03', title: 'Inventarios', description: 'Los insumos de la bodega', route: '/inventory', icon: 'inventory_2', stat: plural(s?.lowStockSupplies, 'por acabarse', 'por acabarse') },
-      { number: '04', title: 'Proveedores', description: 'Quién nos vende los insumos', route: '/suppliers', icon: 'local_shipping', stat: plural(s?.activeSuppliers, 'proveedor', 'proveedores') },
-      { number: '05', title: 'Compras', description: 'Lo que les pedimos a los proveedores', route: '/purchases', icon: 'shopping_cart', stat: plural(s?.pendingPurchaseOrders, 'pedido por llegar', 'pedidos por llegar') },
-      { number: '06', title: 'Talento Humano', description: 'Empleados y nómina', route: '/hr/employees', icon: 'badge', stat: plural(s?.activeEmployees, 'empleado activo', 'empleados activos') },
-      { number: '★', title: 'Reportes', description: '¿Cómo va la panadería?', route: '/reports', icon: 'monitoring', stat: 'Ver reportes' },
+      {
+        number: '01',
+        title: 'CRM (Clientes)',
+        description: 'Las personas que compran',
+        route: '/customers',
+        icon: 'groups',
+        stat: plural(s?.activeCustomers, 'cliente', 'clientes'),
+      },
+      {
+        number: '02',
+        title: 'Facturación y Ventas',
+        description: 'Pedidos, cobro y facturas',
+        route: '/sales',
+        icon: 'point_of_sale',
+        stat: plural(s?.ordersToday, 'pedido hoy', 'pedidos hoy'),
+      },
+      {
+        number: '03',
+        title: 'Inventarios',
+        description: 'Los insumos de la bodega',
+        route: '/inventory',
+        icon: 'inventory_2',
+        stat: plural(s?.lowStockSupplies, 'por acabarse', 'por acabarse'),
+      },
+      {
+        number: '04',
+        title: 'Proveedores',
+        description: 'Quién nos vende los insumos',
+        route: '/suppliers',
+        icon: 'local_shipping',
+        stat: plural(s?.activeSuppliers, 'proveedor', 'proveedores'),
+      },
+      {
+        number: '05',
+        title: 'Compras',
+        description: 'Lo que les pedimos a los proveedores',
+        route: '/purchases',
+        icon: 'shopping_cart',
+        stat: plural(s?.pendingPurchaseOrders, 'pedido por llegar', 'pedidos por llegar'),
+      },
+      {
+        number: '06',
+        title: 'Talento Humano',
+        description: 'Empleados y nómina',
+        route: '/hr/employees',
+        icon: 'badge',
+        stat: plural(s?.activeEmployees, 'empleado activo', 'empleados activos'),
+      },
+      {
+        number: '★',
+        title: 'Reportes',
+        description: '¿Cómo va la panadería?',
+        route: '/reports',
+        icon: 'monitoring',
+        stat: 'Ver reportes',
+      },
     ];
   });
 }

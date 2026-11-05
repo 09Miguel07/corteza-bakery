@@ -1,0 +1,144 @@
+<app-page-header
+  eyebrow="Módulo 02 · Facturación y Ventas"
+  title="Pedidos"
+  subtitle="Lo que está en cocina y lo que falta por cobrar"
+>
+  <a routerLink="new" class="btn btn--primary"
+    ><span class="material-symbols-outlined">add</span> Nuevo pedido</a
+  >
+</app-page-header>
+
+<app-sales-tabs />
+
+<section class="stats" aria-label="Resumen">
+  <div class="stat">
+    <span class="eyebrow">Abiertos</span>
+    <div class="stat__value">{{ summary.value()?.open ?? '—' }}</div>
+    <span class="subtle">Sin cobrar</span>
+  </div>
+  <div class="stat stat--alert">
+    <span class="eyebrow">En preparación</span>
+    <div class="stat__value">{{ summary.value()?.preparing ?? '—' }}</div>
+    <span class="subtle">En el horno o la barra</span>
+  </div>
+  <div class="stat">
+    <span class="eyebrow">Listos</span>
+    <div class="stat__value">{{ summary.value()?.ready ?? '—' }}</div>
+    <span class="subtle">Para entregar</span>
+  </div>
+  <div class="stat">
+    <span class="eyebrow">Vendido hoy</span>
+    <div class="stat__value">{{ summary.value()?.salesToday | cop }}</div>
+    <span class="subtle">{{ summary.value()?.invoicesToday ?? 0 }} facturas</span>
+  </div>
+</section>
+
+<section class="card card--flush">
+  <div class="filters">
+    <div class="segmented" role="group" aria-label="Mostrar">
+      <button type="button" [class.is-selected]="query().open === true" (click)="setOpen(true)">
+        Abiertos
+      </button>
+      <button type="button" [class.is-selected]="query().open === false" (click)="setOpen(false)">
+        Cerrados
+      </button>
+      <button type="button" [class.is-selected]="query().open == null" (click)="setOpen(null)">
+        Todos
+      </button>
+    </div>
+    <div class="field field--narrow">
+      <label for="f-status">Estado</label>
+      <select id="f-status" class="select" (change)="setStatus($event)">
+        <option value="">Todos</option>
+        @for (s of statuses; track s) {
+          <option [value]="s">{{ status[s].label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Dónde</th>
+          <th>Qué pidieron</th>
+          <th>Hora</th>
+          <th class="num">Total</th>
+          <th>Estado</th>
+          <th class="actions">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (o of rows(); track o.id) {
+          <tr>
+            <td>
+              <strong>{{ o.code }}</strong>
+              @if (o.customerName) {
+                <div class="subtle">{{ o.customerName }}</div>
+              }
+            </td>
+            <td>
+              {{ o.tableNumber ? 'Mesa ' + o.tableNumber : serviceType[o.serviceType] }}
+              @if (o.billRequested && !o.isClosed) {
+                <div><app-status-badge label="Pidió la cuenta" tone="danger" /></div>
+              }
+            </td>
+            <td>{{ o.itemsSummary }}</td>
+            <td>{{ o.createdAt | date: 'shortTime' }}</td>
+            <td class="num">{{ o.total | cop }}</td>
+            <td>
+              <app-status-badge [label]="status[o.status].label" [tone]="status[o.status].tone" />
+              @if (o.invoiceNumber) {
+                <div class="subtle">Cobrado · {{ o.invoiceNumber }}</div>
+              }
+            </td>
+            <td class="actions">
+              @if (nextAction[o.status]; as action) {
+                <button
+                  type="button"
+                  class="btn btn--link"
+                  [disabled]="busyId() === o.id"
+                  (click)="advance(o)"
+                >
+                  {{ action }}
+                </button>
+              }
+              <a class="btn btn--link" [routerLink]="[o.id]">{{
+                o.isClosed ? 'Ver' : 'Ver / cobrar'
+              }}</a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="table-state">
+              @if (result.isLoading()) {
+                Cargando pedidos…
+              } @else if (result.error()) {
+                No se pudo cargar la lista.
+                <button type="button" class="btn btn--link" (click)="result.reload()">
+                  Reintentar
+                </button>
+              } @else {
+                <span class="material-symbols-outlined">bakery_dining</span> No hay pedidos con esos
+                filtros.
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result.value(); as page) {
+    <app-pagination
+      [page]="page.page"
+      [pages]="page.totalPages"
+      [total]="page.total"
+      [shown]="page.items.length"
+      noun="pedidos"
+      (pageChange)="goTo($event)"
+    />
+  }
+</section>

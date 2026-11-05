@@ -2,7 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_URL, toHttpParams } from '../core/utils/api';
-import { PagedResult, PurchaseInvoice, PurchaseInvoiceCreateRequest, PurchaseInvoiceQuery, PurchaseInvoiceSummary } from '../entities';
+import {
+  PagedResult,
+  PurchaseInvoice,
+  PurchaseInvoiceCreateRequest,
+  PurchaseInvoiceQuery,
+  PurchaseInvoiceSummary,
+} from '../entities';
 
 /** Pantalla 05.4 · Facturas de compra. */
 @Service()

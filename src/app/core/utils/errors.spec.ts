@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { problemMessage } from './errors';
 
-const httpError = (status: number, error: unknown = null) => new HttpErrorResponse({ status, error });
+const httpError = (status: number, error: unknown = null) =>
+  new HttpErrorResponse({ status, error });
 
 describe('problemMessage', () => {
   it('explains that the API is down when there is no connection', () => {
@@ -9,7 +10,10 @@ describe('problemMessage', () => {
   });
 
   it('uses the domain message of a 422 (business rule)', () => {
-    const error = httpError(422, { title: 'Regla de negocio', detail: 'Stock insuficiente: hay 40 bultos y se intentan sacar 50.' });
+    const error = httpError(422, {
+      title: 'Regla de negocio',
+      detail: 'Stock insuficiente: hay 40 bultos y se intentan sacar 50.',
+    });
 
     expect(problemMessage(error)).toBe('Stock insuficiente: hay 40 bultos y se intentan sacar 50.');
   });

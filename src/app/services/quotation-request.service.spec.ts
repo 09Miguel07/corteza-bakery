@@ -9,7 +9,9 @@ describe('QuotationRequestService', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     service = TestBed.inject(QuotationRequestService);
     http = TestBed.inject(HttpTestingController);
   });
@@ -25,7 +27,11 @@ describe('QuotationRequestService', () => {
   });
 
   it('creates a request with deadline and supplies', () => {
-    const request = { description: null, responseDeadline: '2026-11-05', items: [{ supplyId: 1, quantity: 25 }] };
+    const request = {
+      description: null,
+      responseDeadline: '2026-11-05',
+      items: [{ supplyId: 1, quantity: 25 }],
+    };
     service.create(request).subscribe();
 
     const req = http.expectOne('/api/quotation-requests');
@@ -35,7 +41,12 @@ describe('QuotationRequestService', () => {
   });
 
   it('registers a supplier quotation on the request', () => {
-    const quotation = { supplierId: 3, deliveryDays: 2, notes: null, prices: [{ supplyId: 1, unitPrice: 50_000 }] };
+    const quotation = {
+      supplierId: 3,
+      deliveryDays: 2,
+      notes: null,
+      prices: [{ supplyId: 1, unitPrice: 50_000 }],
+    };
     service.registerQuotation(4, quotation).subscribe();
 
     const req = http.expectOne('/api/quotation-requests/4/quotations');

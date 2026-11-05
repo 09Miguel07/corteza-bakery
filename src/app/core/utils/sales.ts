@@ -26,7 +26,10 @@ export const PAYMENT_METHOD: Record<PaymentMethod, { label: string; icon: string
   Transfer: { label: 'Transferencia', icon: 'qr_code_2' },
 };
 
-export const SERVICE_TYPE: Record<ServiceType, string> = { DineIn: 'En mesa', Takeaway: 'Para llevar' };
+export const SERVICE_TYPE: Record<ServiceType, string> = {
+  DineIn: 'En mesa',
+  Takeaway: 'Para llevar',
+};
 
 /** Texto del botón que avanza el pedido al siguiente paso de cocina. */
 export const NEXT_ACTION: Partial<Record<OrderStatus, string>> = {
@@ -35,7 +38,11 @@ export const NEXT_ACTION: Partial<Record<OrderStatus, string>> = {
   Ready: 'Marcar entregado',
 };
 
-const FLOW: Partial<Record<OrderStatus, OrderStatus>> = { Received: 'Preparing', Preparing: 'Ready', Ready: 'Delivered' };
+const FLOW: Partial<Record<OrderStatus, OrderStatus>> = {
+  Received: 'Preparing',
+  Preparing: 'Ready',
+  Ready: 'Delivered',
+};
 
 /** Mismo flujo que Order.AdvanceTo en el dominio: no se salta pasos. */
 export function nextStatus(status: OrderStatus): OrderStatus | null {
@@ -53,11 +60,17 @@ export interface CartLine {
   quantity: number;
 }
 
-export function addToCart(cart: CartLine[], product: { id: number; name: string; price: number }): CartLine[] {
+export function addToCart(
+  cart: CartLine[],
+  product: { id: number; name: string; price: number },
+): CartLine[] {
   const existing = cart.find((l) => l.productId === product.id);
   return existing
     ? cart.map((l) => (l.productId === product.id ? { ...l, quantity: l.quantity + 1 } : l))
-    : [...cart, { productId: product.id, name: product.name, unitPrice: product.price, quantity: 1 }];
+    : [
+        ...cart,
+        { productId: product.id, name: product.name, unitPrice: product.price, quantity: 1 },
+      ];
 }
 
 /** Cantidad 0 o menos quita el producto. */
@@ -84,3 +97,10 @@ export function quickCash(total: number): number[] {
   const roundUp = [...rounded, ...BILLS].filter((v) => v > total);
   return [total, ...[...new Set(roundUp)].sort((a, b) => a - b).slice(0, 3)];
 }
+
+export const PRODUCT_CATEGORY: Record<'Bakery' | 'Pastry' | 'Drink' | 'Dessert', string> = {
+  Bakery: 'Panadería',
+  Pastry: 'Pastelería',
+  Drink: 'Bebidas',
+  Dessert: 'Postres',
+};

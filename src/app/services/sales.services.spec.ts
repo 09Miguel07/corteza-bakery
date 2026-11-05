@@ -9,14 +9,18 @@ describe('Sales services', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     http = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => http.verify());
 
   it('lists open orders', () => {
-    TestBed.inject(OrderService).list({ page: 1, pageSize: 10, open: true, status: null }).subscribe();
+    TestBed.inject(OrderService)
+      .list({ page: 1, pageSize: 10, open: true, status: null })
+      .subscribe();
 
     const req = http.expectOne((r) => r.url === '/api/orders');
     expect(req.request.params.get('open')).toBe('true');
@@ -26,11 +30,18 @@ describe('Sales services', () => {
 
   it('creates, advances, asks for the bill and checks out an order', async () => {
     const orders = TestBed.inject(OrderService);
-    const create = { serviceType: 'DineIn' as const, diningTableId: 4, customerId: null, items: [{ productId: 1, quantity: 4 }] };
+    const create = {
+      serviceType: 'DineIn' as const,
+      diningTableId: 4,
+      customerId: null,
+      items: [{ productId: 1, quantity: 4 }],
+    };
     orders.create(create).subscribe();
     orders.advance(9, 'Preparing').subscribe();
     orders.requestBill(9).subscribe();
-    const invoice = firstValueFrom(orders.checkout(9, { paymentMethod: 'Cash', amountReceived: 20_000 }));
+    const invoice = firstValueFrom(
+      orders.checkout(9, { paymentMethod: 'Cash', amountReceived: 20_000 }),
+    );
 
     expect(http.expectOne('/api/orders').request.body).toEqual(create);
     const advance = http.expectOne('/api/orders/9/status');

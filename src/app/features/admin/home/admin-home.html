@@ -16,7 +16,9 @@
   @for (card of cards(); track card.route) {
     <a class="module" [routerLink]="card.route">
       <span class="module__icon material-symbols-outlined">{{ card.icon }}</span>
-      <span class="eyebrow">{{ card.number === '★' ? 'Administrador' : 'Módulo ' + card.number }}</span>
+      <span class="eyebrow">{{
+        card.number === '★' ? 'Administrador' : 'Módulo ' + card.number
+      }}</span>
       <strong class="module__title">{{ card.title }}</strong>
       <span class="module__desc">{{ card.description }}</span>
       @if (card.stat) {
@@ -46,7 +48,8 @@
             @if (item.status === 'Out') {
               Agotado · mínimo {{ item.minStock | qty }} {{ item.unitLabel }}
             } @else {
-              Quedan {{ item.currentStock | qty }} {{ item.unitLabel }} · mínimo {{ item.minStock | qty }}
+              Quedan {{ item.currentStock | qty }} {{ item.unitLabel }} · mínimo
+              {{ item.minStock | qty }}
             }
           </span>
         </li>

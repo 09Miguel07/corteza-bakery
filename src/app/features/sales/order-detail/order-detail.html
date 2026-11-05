@@ -1,0 +1,161 @@
+<a routerLink="/sales" class="back-link"
+  ><span class="material-symbols-outlined">arrow_back</span> Volver a pedidos</a
+>
+
+@if (order.isLoading() && !order.value()) {
+  <section class="card"><div class="skeleton"></div></section>
+} @else if (order.error()) {
+  <div class="alert alert--danger">
+    <span class="material-symbols-outlined">error</span> No se encontró el pedido.
+  </div>
+} @else if (order.value(); as o) {
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">
+        {{ o.tableNumber ? 'Mesa ' + o.tableNumber : serviceType[o.serviceType] }}
+      </p>
+      <h1>
+        {{ o.code }}
+        <app-status-badge [label]="status[o.status].label" [tone]="status[o.status].tone" />
+      </h1>
+      <p class="page-header__subtitle">
+        {{ o.customerName ?? 'Cliente ocasional' }} · tomado a las
+        {{ o.createdAt | date: 'shortTime' }} por {{ o.servedBy }}
+      </p>
+    </div>
+    <div class="page-header__actions">
+      @if (nextAction[o.status]; as action) {
+        <button type="button" class="btn btn--ghost" [disabled]="busy()" (click)="advance(o)">
+          {{ action }}
+        </button>
+      }
+      @if (o.serviceType === 'DineIn' && !o.closedAt && !o.billRequestedAt) {
+        <button type="button" class="btn btn--ghost" [disabled]="busy()" (click)="requestBill(o)">
+          Pidió la cuenta
+        </button>
+      }
+      @if (canCancel()) {
+        <button type="button" class="btn btn--link-danger" [disabled]="busy()" (click)="cancel(o)">
+          Cancelar pedido
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <div class="alert alert--danger" role="alert">
+      <span class="material-symbols-outlined">error</span>{{ message }}
+    </div>
+  }
+
+  <div class="layout-2col">
+    <section class="card card--flush">
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th class="num">Cantidad</th>
+              <th class="num">Precio</th>
+              <th class="num">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of o.items; track i.productId) {
+              <tr>
+                <td>{{ i.productName }}</td>
+                <td class="num">{{ i.quantity }}</td>
+                <td class="num">{{ i.unitPrice | cop }}</td>
+                <td class="num">{{ i.lineTotal | cop }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="totals" style="padding: 1rem 1.25rem">
+        <span class="muted">Total</span><strong>{{ o.total | cop }}</strong>
+      </div>
+    </section>
+
+    <aside class="card">
+      @if (o.invoiceId) {
+        <div class="card__title">
+          <span class="material-symbols-outlined">receipt_long</span>
+          <h2>Cobrado</h2>
+        </div>
+        <p class="subtle" style="margin: 0.5rem 0 1rem">
+          Factura {{ o.invoiceNumber }} · {{ o.closedAt | date: 'short' }}
+        </p>
+        <a class="btn btn--primary btn--block" [routerLink]="['/sales/invoices', o.invoiceId]"
+          >Ver factura</a
+        >
+      } @else if (o.status === 'Cancelled') {
+        <p class="subtle">El pedido se canceló a las {{ o.closedAt | date: 'shortTime' }}.</p>
+      } @else {
+        <div class="card__title">
+          <span class="material-symbols-outlined">point_of_sale</span>
+          <h2>Cobrar</h2>
+        </div>
+
+        <div class="segmented" role="group" aria-label="Medio de pago" style="margin-top: 0.75rem">
+          @for (m of methods; track m[0]) {
+            <button
+              type="button"
+              [class.is-selected]="method() === m[0]"
+              (click)="method.set(m[0])"
+            >
+              {{ m[1].label }}
+            </button>
+          }
+        </div>
+
+        @if (method() === 'Cash') {
+          <div class="field" style="margin-top: 0.9rem">
+            <label for="received">Efectivo recibido</label>
+            <input
+              id="received"
+              class="input"
+              type="number"
+              step="100"
+              [value]="received() ?? ''"
+              (input)="setReceived($event)"
+            />
+          </div>
+          <div class="chips" style="margin-top: 0.5rem">
+            @for (amount of suggestions(); track amount) {
+              <button
+                type="button"
+                class="chip"
+                [class.is-selected]="received() === amount"
+                (click)="received.set(amount)"
+              >
+                {{ amount | cop }}
+              </button>
+            }
+          </div>
+        }
+
+        <dl class="facts" style="margin-top: 1rem">
+          <dt>Total</dt>
+          <dd>{{ o.total | cop }}</dd>
+          @if (method() === 'Cash') {
+            <dt>Cambio</dt>
+            <dd [style.color]="change() === null ? 'var(--color-danger)' : null">
+              {{ change() === null ? 'Falta efectivo' : (change() | cop) }}
+            </dd>
+          }
+        </dl>
+
+        <button
+          type="button"
+          class="btn btn--primary btn--block"
+          style="margin-top: 1.25rem"
+          [disabled]="busy()"
+          (click)="checkout(o)"
+        >
+          <span class="material-symbols-outlined">payments</span> Cobrar y emitir factura
+        </button>
+      }
+    </aside>
+  </div>
+}
