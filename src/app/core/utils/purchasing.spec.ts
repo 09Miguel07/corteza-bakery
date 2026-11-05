@@ -7,6 +7,7 @@ import {
   QUOTATION_STATUS,
   quotationTotal,
   RFQ_STATUS,
+  dueLabel,
 } from './purchasing';
 
 describe('purchasing rules (UI)', () => {
@@ -79,5 +80,17 @@ describe('purchasing rules (UI)', () => {
       expect(RFQ_STATUS.Closed.label).toBe('Cerrada');
       expect(QUOTATION_STATUS.Selected.label).toBe('Seleccionada');
     });
+  });
+});
+
+describe('dueLabel (facturas de compra)', () => {
+  const today = '2026-11-04';
+
+  it('describes how far the due date is', () => {
+    expect(dueLabel({ status: 'Pending', dueDate: '2026-11-04' }, today)).toEqual({ text: 'Vence hoy', tone: 'warning' });
+    expect(dueLabel({ status: 'Pending', dueDate: '2026-11-07' }, today)).toEqual({ text: 'Vence en 3 días', tone: 'neutral' });
+    expect(dueLabel({ status: 'Pending', dueDate: '2026-11-05' }, today)).toEqual({ text: 'Vence mañana', tone: 'warning' });
+    expect(dueLabel({ status: 'Pending', dueDate: '2026-11-02' }, today)).toEqual({ text: 'Vencida hace 2 días', tone: 'danger' });
+    expect(dueLabel({ status: 'Paid', dueDate: '2026-11-02' }, today)).toEqual({ text: 'Pagada', tone: 'success' });
   });
 });
