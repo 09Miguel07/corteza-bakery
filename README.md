@@ -93,7 +93,7 @@ src/app/
 │   └── navigation.ts# menú por rol
 ├── layout/shell/    # menú lateral + barra superior
 ├── shared/          # componentes y pipes reutilizables (page-header, pagination, status-badge, field-error…)
-└── features/        # pantallas por módulo (crm, suppliers, inventory, hr, admin, auth)
+└── features/        # pantallas por módulo (crm, sales, suppliers, purchases, inventory, hr, admin, auth)
 ```
 
 ### Convenciones
@@ -112,7 +112,8 @@ src/app/
 |---|---|
 | `npm start` | Servidor de desarrollo con proxy |
 | `npm run build` | Build de producción en `dist/web` |
-| `npm test` | Pruebas unitarias (Vitest) |
+| `npm test` | Pruebas unitarias y de componentes (Vitest) |
+| `npx ng test --watch=false --coverage` | Pruebas con reporte de cobertura en `coverage/` |
 
 ## Enlaces
 

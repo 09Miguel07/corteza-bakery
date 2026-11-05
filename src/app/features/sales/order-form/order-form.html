@@ -57,7 +57,7 @@
         <select id="table" class="select" [value]="selectedTable()" (change)="pickTable($event)">
           <option value="">Elige una mesa libre…</option>
           @for (t of freeTables(); track t.id) {
-            <option [value]="t.id">Mesa {{ t.number }} · {{ t.capacity }} puestos</option>
+            <option [value]="t.id" [selected]="t.id + '' === selectedTable()">Mesa {{ t.number }} · {{ t.capacity }} puestos</option>
           }
         </select>
       </div>
